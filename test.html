@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extend Image Background</title>
+    <style>
+        #canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <img id="sourceImage" src="template1.jpg" style="display:none;">
+    <canvas id="canvas"></canvas>
+    <button id="extendButton">Extend Background</button>
+
+    <script>
+        document.getElementById('extendButton').addEventListener('click', function() {
+            const sourceImage = document.getElementById('sourceImage');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            sourceImage.onload = function() {
+                // Set canvas dimensions larger than the source image
+                const padding = 100; // Adjust padding as needed
+                canvas.width = sourceImage.naturalWidth + padding * 2;
+                canvas.height = sourceImage.naturalHeight + padding * 2;
+
+                // Draw a background color
+                ctx.fillStyle = '#f0f0f0'; // Background color
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw the source image centered on the canvas
+                const x = padding;
+                const y = padding;
+                ctx.drawImage(sourceImage, x, y);
+
+                // Optional: Add other manipulations or elements
+            };
+
+            sourceImage.onerror = function() {
+                console.error('Error loading source image.');
+            };
+        });
+    </script>
+</body>
+</html>
