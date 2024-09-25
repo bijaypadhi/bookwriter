@@ -161,7 +161,7 @@ function applyTemplate(templateId) {
 
     if (fileNumber % 2 === 1) { // Odd number
         imgElement.src = getImagePath(templateId);
-        sendTemplateIdToServer(templateId, fileNumber);
+        // sendTemplateIdToServer(templateId, fileNumber);
 
         // Make the left text area visible and set its dimensions
 		
@@ -170,10 +170,10 @@ function applyTemplate(templateId) {
         textAreaRight.style.visibility = 'visible';
 		textAreaRight.readOnly = false;
 		textAreaRight.style.display = "block";
-		micButton.onclick = () => toggleSpeechRecognition(micButton, textAreaRight);
+		toggleSpeechRecognition(textAreaRight);
     } else { // Even number
         imgPageElement.src = getImagePath(templateId);
-		sendTemplateIdToServer(templateId, fileNumber);
+		//sendTemplateIdToServer(templateId, fileNumber);
         imgPageElement.onload = function() {
             canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -200,7 +200,7 @@ function applyTemplate(templateId) {
 			textAreaLeft.readOnly = false;
             textAreaRight.style.visibility = 'hidden';
         
-			micButton.onclick = () => toggleSpeechRecognition(micButton, textAreaLeft);
+			toggleSpeechRecognition(textAreaLeft);
         };
     }
 }
@@ -320,33 +320,41 @@ function dataURLToBlob(jpegDataUrl) {
     return new Blob([arrayBuffer], { type: mimeString });
 }
 
-
-let recognition = null;
-let recognizing = false;
-
-function toggleSpeechRecognition(micButton, textArea) {
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Speech Recognition API is not supported in this browser.");
+function toggleSpeechRecognition(textArea) {
+    if (!annyang) {
+        alert("Speech Recognition is not supported in this browser.");
         return;
     }
 
-    let recognition = new webkitSpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.onresult = function(event) {
-        textArea.value += event.results[0][0].transcript;
+    // Define the command for capturing speech text
+    const commands = {
+        '*text': function(text) {
+            textArea.value += text + ' ';
+        }
     };
 
-    if (micButton.classList.contains('fa-microphone-slash')) {
-        recognition.start();
-        micButton.classList.remove('fa-microphone-slash');
-        micButton.classList.add('fa-microphone');
-    } else {
-        recognition.stop();
-        micButton.classList.remove('fa-microphone');
-        micButton.classList.add('fa-microphone-slash');
-    }
+    // Add commands to annyang
+    annyang.addCommands(commands);
+
+    // Integrate SpeechKITT with annyang
+    SpeechKITT.annyang();
+
+    // Set up SpeechKITT UI
+    SpeechKITT.setInstructionsText('Speak to add text');
+
+    // Set up the start and abort commands to send messages to the parent
+    SpeechKITT.setStartCommand(() => {
+        window.parent.postMessage({ action: "startRecognition" }, "http://localhost:8080");
+    });
+
+    SpeechKITT.setAbortCommand(() => {
+        window.parent.postMessage({ action: "abortRecognition" }, "http://localhost:8080");
+    });
+
+    // Render SpeechKITT UI
+    SpeechKITT.vroom();
 }
+
 document.getElementById('selectTemplateButton').addEventListener('click', selectTemplate);
 function getImagePath(templateId) {
     switch (templateId) {

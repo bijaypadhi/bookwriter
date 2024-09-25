@@ -4,6 +4,6 @@
 */
 export function homeURL() {return           "http://localhost:8000/bookwriter/"}
 export function readerURL() {return         "http://localhost:8000/bookwriter/read.html"}
-export function booksURL() {return          "http://localhost:8000//bookwriterlibrary/"}
+export function booksURL() {return          "http://localhost:8000/bookwriter/library/"}
 export function websiteName() {return       "Okuma Example"}
 export function defaultLanguage() {return   "en"}

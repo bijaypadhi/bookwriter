@@ -4,7 +4,8 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="viewport-fit=cover, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
     <meta name="theme-color" content="#000">
     <link rel="shortcut icon" type="image/webp" href="./img/icon-small.webp"/>
     <link rel="apple-touch-icon" href="./img/icon.webp"/>
@@ -14,6 +15,7 @@
     <link type="text/css" rel="stylesheet" href="./css/navMenu.css"/>
     <link type="text/css" rel="stylesheet" href="./css/config.css"/>
     <link type="text/css" rel="stylesheet" href="./css/global.css"/>
+	<link type="text/css" rel="stylesheet" href="./css/speechkiit.css"/>
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
     #bottomControls {
@@ -48,26 +50,7 @@
             position: absolute;
             display: inline-block;
         }
-        .mic-button {
-            position: absolute;
-            top: -30px; /* Position the mic icon above the textarea */
-            right: 10px;
-            cursor: pointer;
-            font-size: 24px;
-            color: white;
-        }
-        .mic-muted {
-            color: red;
-        }
-        .mic-muted::after {
-            content: "\f057"; /* FontAwesome icon for strikethrough */
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            position: absolute;
-            top: 10px;
-            left: -10px;
-            color: red;
-        }
+     
 	#selectTemplateButton {
         background-color: white;
         color: black;
@@ -178,10 +161,10 @@
     <div id="eyeFilter"></div>
    <div id="bottomControls">
     <button id="selectTemplateButton">Select Template</button>
-    <i id="micButton" class="fas fa-microphone-slash mic-button"></i>
-</div>
+  </div>
 </body>
-
+<script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
-
+ <script src="./js/speechkiit.js"></script>
+ 
 </html>
