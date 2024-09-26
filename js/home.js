@@ -3,8 +3,15 @@ import * as CONSTANTS from './constants.js';
 import { findGetParameter, applyTheme, infoToPageURL, infoToImageURL, chooseAndFetchLanguage, fetchBook, fetchLibrary } from './tools.js';
 
 const libraryParam = findGetParameter('library');
-const LIBRARY = libraryParam ? libraryParam : CONSTANTS.booksURL();
+const userId = findGetParameter('userId');
+// Construct the LIBRARY URL
+let LIBRARY = libraryParam ? libraryParam : CONSTANTS.booksURL();
 
+// Check if the userId is present and append it correctly
+if (userId) {
+    LIBRARY += `library_${userId}/`; // Ensure no extra underscore and format is correct
+} 
+alert(LIBRARY);
 function applyLanguage(languageData) {
     document.title = CONSTANTS.websiteName() + ' - ' + languageData.homePage.home;
     document.getElementById("availableBooks").innerHTML = languageData.homePage.availableBooks;
