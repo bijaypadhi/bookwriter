@@ -16,9 +16,11 @@
     <link type="text/css" rel="stylesheet" href="./css/config.css"/>
     <link type="text/css" rel="stylesheet" href="./css/global.css"/>
 	<link type="text/css" rel="stylesheet" href="./css/speechkiit.css"/>
+	 <link rel="stylesheet" type="text/css" href="./slick/slick.css">
+     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css"> 
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-    #bottomControls {
+#bottomControls {
     position: fixed;
     bottom: 20px;
     left: 50%;
@@ -86,6 +88,19 @@
 #imgPageRight {
     position: relative;
 }
+ #selector {
+            position: fixed; /* Keeps it fixed in position */
+             
+            top: 70px;       /* 80px from the top of the page */
+            width: 120px;    /* Adjust width as needed */ 
+            height: 82vh;    /* 85% of the viewport height */ 
+            background-color: black; /* Background color */
+            color: white;    /* Text color to contrast with black background */
+            padding: 10px;   /* Optional: Padding */
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+            overflow: auto;  /* Enables scrolling if content overflows */
+            transition: right 0.3s ease; /* Smooth transition when resizing */
+        }
     </style>
 </head>
 
@@ -162,9 +177,56 @@
    <div id="bottomControls">
     <button id="selectTemplateButton">Select Template</button>
   </div>
+  <div id="selector">
+  <section class="vertical-center-4 slider">
+    <div>
+      <img src="http://placehold.it/350x100?text=1">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=2">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=3">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=4">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=5">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=6">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=7">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=8">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=9">
+    </div>
+    <div>
+      <img src="http://placehold.it/350x100?text=10">
+    </div>
+  </section>
+  </div>
 </body>
 <script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
  <script src="./js/speechkiit.js"></script>
- 
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+  <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript">
+    $(document).on('ready', function() {
+      $(".vertical-center-4").slick({
+        dots: true,
+        vertical: true,
+        centerMode: true,
+        slidesToShow: 4,
+        slidesToScroll: 2
+      });
+     
+    });
+</script>
 </html>
