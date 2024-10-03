@@ -4,6 +4,11 @@
 */
 export function homeURL() {return           "http://localhost:8000/bookwriter/"}
 export function readerURL() {return         "http://localhost:8000/bookwriter/read.html"}
+export function booksURL() {return          "http://localhost:8000/bookwriter/library/"}
+/*
 export function booksURL() {return          "https://storage.googleapis.com/book_application/library/"}
+
+ for local changes
+*/
 export function websiteName() {return       "Okuma Example"}
 export function defaultLanguage() {return   "en"}

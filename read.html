@@ -2,130 +2,146 @@
 <html lang="en">
 
 <head>
-
-    <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000">
-    <link rel="shortcut icon" type="image/webp" href="./img/icon-small.webp"/>
-    <link rel="apple-touch-icon" href="./img/icon.webp"/>
+    <link rel="shortcut icon" type="image/webp" href="./img/icon-small.webp" />
+    <link rel="apple-touch-icon" href="./img/icon.webp" />
     <link rel="manifest" href="./js/manifest.json">
-    <link type="text/css" rel="stylesheet" href="./css/read.css"/>
-    <link type="text/css" rel="stylesheet" href="./css/navImage.css"/>
-    <link type="text/css" rel="stylesheet" href="./css/navMenu.css"/>
-    <link type="text/css" rel="stylesheet" href="./css/config.css"/>
-    <link type="text/css" rel="stylesheet" href="./css/global.css"/>
-	<link type="text/css" rel="stylesheet" href="./css/speechkiit.css"/>
-	 <link rel="stylesheet" type="text/css" href="./slick/slick.css">
-     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css"> 
-	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-#bottomControls {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 1000;
-}
+    <link type="text/css" rel="stylesheet" href="./css/read.css" />
+    <link type="text/css" rel="stylesheet" href="./css/navImage.css" />
+    <link type="text/css" rel="stylesheet" href="./css/navMenu.css" />
+    <link type="text/css" rel="stylesheet" href="./css/config.css" />
+    <link type="text/css" rel="stylesheet" href="./css/global.css" />
+    <link type="text/css" rel="stylesheet" href="./css/speechkiit.css" />
+    <link rel="stylesheet" type="text/css" href="./slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
 
-#bottomControls button {
-    background-color: white;
+    <style>
+        #bottomControls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #bottomControls button {
+            background-color: gray;
+            color: black;
+            border: 1px solid black;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        #bottomControls button:hover {
+            background-color: #f0f0f0;
+        }
+
+        #container {
+            position: relative;
+        }
+
+        .text-area-container {
+            position: absolute;
+            display: inline-block;
+        }
+
+ #selectTemplateButton {
+     position: fixed;
+    background-color: gray;
     color: black;
     border: 1px solid black;
     padding: 10px 20px;
     cursor: pointer;
     font-size: 16px;
     border-radius: 5px;
+    position: absolute;
+  top: -730px;
+  left: 600px;
+  margin: 10px;
 }
 
-#bottomControls button:hover {
-    background-color: #f0f0f0;
-}
 
-		 #container {
+
+        .hidden-textarea {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 200px;
+            height: 100px;
+            border: 2px solid red;
+            background: white;
+            visibility: hidden;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        #navImage {
             position: relative;
         }
-        .text-area-container {
+
+        #imgPageLeft,
+        #imgPageRight {
+            position: relative;
+        }
+
+        #textAreaLeft,
+        #textAreaRight {
             position: absolute;
-            display: inline-block;
+            display: none;
+            z-index: 10;
+            width: 200px; /* Adjust as needed */
+            height: 100px; /* Adjust as needed */
+            background: transparent;
         }
-     
-	#selectTemplateButton {
-        background-color: white;
-        color: black;
-        border: 1px solid black;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 16px;
-        border-radius: 5px;
-    }
 
-   
-.hidden-textarea {
-    position: absolute;
-    margin-toptop: 10px;
-    left: 0;
-    width: 200px;
-    height: 100px;
-    border: 2px solid red; /* Visible border for identification */
-    background: transparent; /* Semi-transparent background for visibility */
-    color: black; /* Ensure text is visible */
-    resize: none; /* Disable resizing */
-    visibility: hidden; /* Hide the text area initially */
-    font-size: 16px; /* Adjust font size as needed */
-    z-index: 10; /* Ensure it's on top of other elements if necessary */
-    pointer-events: auto; /* Ensure it can receive mouse events */
-}
-
-#navImage {
-    position: relative; /* Ensure positioning for absolute children */
-}
-
-#imgPageLeft,
-#imgPageRight {
-    position: relative;
-}
- #selector {
-            position: fixed; /* Keeps it fixed in position */
-             
-            top: 70px;       /* 80px from the top of the page */
-            width: 120px;    /* Adjust width as needed */ 
-            height: 82vh;    /* 85% of the viewport height */ 
-            background-color: black; /* Background color */
-            color: white;    /* Text color to contrast with black background */
-            padding: 10px;   /* Optional: Padding */
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
-            overflow: auto;  /* Enables scrolling if content overflows */
-            transition: right 0.3s ease; /* Smooth transition when resizing */
+        #selector {
+            position: fixed;
+            top: 70px;
+            width: 120px;
+            height: 82vh;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            overflow: auto;
+            transition: right 0.3s ease;
+			right: 10px;
         }
+		
     </style>
-</head>
+	</head>
 
 <body>
-
     <div id="loaderContainer">
         <svg id="loader" viewBox="25 25 50 50">
-            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
         </svg>
     </div>
-
     <div id=topMenu class="navMenu">
         <div class="navContainer">
-            <div id="bookInfo"><h2 id="bookTitle"></h2><h3 id="bookVolume"></h3></div>
+            <div id="bookInfo">
+                <h2 id="bookTitle"></h2>
+                <h3 id="bookVolume"></h3>
+            </div>
             <div id="fullScreenButton" class="button icon"></div>
             <div id="configButton" class="button icon"></div>
         </div>
     </div>
-
     <div id="navImageContainer" class="zoom">
         <div id="navImage">
-         <img id="imgPageLeft">
-        <textarea id="textAreaLeft" class="hidden-textarea" spellcheck="true" readonly></textarea>
-        <img id="imgPageRight">
-        <textarea id="textAreaRight" class="hidden-textarea" spellcheck="true" readonly></textarea>
+            <img id="imgPageLeft" />
+            <div id="textAreaLeft"></div>
+            <img id="imgPageRight" />
+            <div id="textAreaRight"></div>
             <div id="continuousScrollingPages"></div>
             <div id="filters">
                 <div id="paperTexture"></div>
@@ -135,7 +151,6 @@
             </div>
         </div>
     </div>
-
     <div id="bottomMenu" class="navMenu">
         <div class="navContainer">
             <div id="leftChapterButton" class="button icon"></div>
@@ -150,83 +165,62 @@
             </div>
         </div>
     </div>
+	<div id="configMenu" class="darkMode">
+		<div id="closeMenu" class="button"><div class="icon"></div></div>
+		<div id="pageWidthContainer">
+			<p>Page width</p>
+			<input id="pageWidthSlider" type="range" min="10" max="100" class="slider">
+		</div>
+		<div id="doublePageButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="paperTextureButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="bookFoldButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="lightingButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="sidePagesButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="bookShadowButton" class="button"><div class="icon"></div><p></p></div>
+		<div id="themeSelectionContainer">
+			<select id="themeSelection"></select>
+		</div>
+		<div id="languageSelectionContainer">
+			<select id="languageSelection"></select>
+		</div>
+	</div>
 
-    <div id="configMenu" class="darkMode">
-        <div id="closeMenu" class="button"><div class="icon"></div></div>
-        <div id="pageWidthContainer">
-            <p>Page width</p>
-            <input id="pageWidthSlider" type="range" min="10" max="100" class="slider">
-        </div>
-        <div id="doublePageButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="paperTextureButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="bookFoldButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="lightingButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="sidePagesButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="bookShadowButton" class="button"><div class="icon"></div><p></p></div>
-        <div id="themeSelectionContainer">
-            <select id="themeSelection"></select>
-        </div>
-        <div id="languageSelectionContainer">
-            <select id="languageSelection"></select>
-        </div>
-    </div>
-
-    
-    
-    <div id="eyeFilter"></div>
-   <div id="bottomControls">
+	<div id="eyeFilter"></div>
+	<div id="bottomControls">
     <button id="selectTemplateButton">Select Template</button>
   </div>
-  <div id="selector">
-  <section class="vertical-center-4 slider">
-    <div>
-      <img src="http://placehold.it/350x100?text=1">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=2">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=3">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=4">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=5">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=6">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=7">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=8">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=9">
-    </div>
-    <div>
-      <img src="http://placehold.it/350x100?text=10">
-    </div>
-  </section>
-  </div>
+  
+ <div id="selector">
+        <section class="vertical-center-4 slider">
+            <div><img src="http://placehold.it/350x100?text=1"></div>
+            <div><img src="http://placehold.it/350x100?text=2"></div>
+            <div><img src="http://placehold.it/350x100?text=3"></div>
+            <div><img src="http://placehold.it/350x100?text=4"></div>
+            <div><img src="http://placehold.it/350x100?text=5"></div>
+            <div><img src="http://placehold.it/350x100?text=6"></div>
+            <div><img src="http://placehold.it/350x100?text=7"></div>
+            <div><img src="http://placehold.it/350x100?text=8"></div>
+            <div><img src="http://placehold.it/350x100?text=9"></div>
+            <div><img src="http://placehold.it/350x100?text=10"></div>
+ </section>
+ </div>
 </body>
 <script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
- <script src="./js/speechkiit.js"></script>
-  <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
-  <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript">
-    $(document).on('ready', function() {
-      $(".vertical-center-4").slick({
-        dots: true,
-        vertical: true,
-        centerMode: true,
-        slidesToShow: 4,
-        slidesToScroll: 2
-      });
-     
+<script src="./js/speechkiit.js"></script>
+<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+<script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script type="text/javascript">
+    $(document).on('ready', function () {
+        $(".vertical-center-4").slick({
+            dots: true,
+            vertical: true,
+            centerMode: true,
+            slidesToShow: 4,
+            slidesToScroll: 2
+        });
     });
 </script>
+
 </html>

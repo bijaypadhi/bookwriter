@@ -11,7 +11,7 @@ import { setCookie, getCookie, getPosCookie, setPosCookie } from './cookie.js';
  let textAreaObject= null;
  let micButton=null;
  
-function getChapterCount() {
+ /*function getChapterCount() {
   let count = 0;
   for (let i = 0; i < VCONFIG.bookmarks.length; i++) {
     if (VCONFIG.bookmarks[i].type == 'chapter') count++;
@@ -38,7 +38,7 @@ function getCurrentChapter(page = PAGE) {
   }
   return i;
 }
-
+*/
 function imgFinishedLoading() {
 
   /* Create a list of pages to cache and then cache them asynchronously
@@ -147,12 +147,61 @@ function selectTemplate() {
         }
     }
 }
+let quillLeft, quillRight;
+function initializeQuill(position, canvasWidth, canvasHeight) {
+    const quillWidth = canvasWidth / 2;
+    const quillHeight = canvasHeight / 2;
+
+    if (position === 'left') {
+        const quillLeftDiv = document.createElement('div');
+        quillLeftDiv.id = 'quillLeft';
+        quillLeftDiv.style.position = 'absolute';
+        quillLeftDiv.style.left = '350px'; // Adjust as necessary
+        quillLeftDiv.style.top = '100px'; // Adjust as necessary
+        quillLeftDiv.style.width = `${quillWidth}px`; // Adjust as necessary
+        quillLeftDiv.style.height = `${quillHeight}px`; // Adjust as necessary
+		quillLeftDiv.setAttribute('spellcheck', 'true');
+        document.body.appendChild(quillLeftDiv);
+        quillLeft = new Quill('#quillLeft', {
+            theme: 'snow'
+        });
+		toggleSpeechRecognition(document.querySelector('#quillLeft .ql-editor'));
+    
+    } else if (position === 'right') {
+        const quillRightDiv = document.createElement('div');
+        quillRightDiv.id = 'quillRight';
+        quillRightDiv.style.position = 'absolute';
+        quillRightDiv.style.left = '350px'; // Adjust as necessary
+        quillRightDiv.style.top = '100px'; // Adjust as necessary
+        quillRightDiv.style.width = `${quillWidth}px`; // Adjust as necessary
+        quillRightDiv.style.height = `${quillHeight}px`; // Adjust as necessary
+		quillRightDiv.setAttribute('spellcheck', 'true');
+        document.body.appendChild(quillRightDiv);
+        quillRight = new Quill('#quillRight', {
+            theme: 'snow'
+        });
+		toggleSpeechRecognition(document.querySelector('#quillRight .ql-editor'));
+    }
+	
+	
+    
+    var toolbar = document.querySelector('.ql-toolbar');
+    toolbar.style.display = 'inline-block';
+    toolbar.style.marginBottom  = '5px';
+    toolbar.style.backgroundColor = 'lightpink';
+    toolbar.style.width = '25%';
+    toolbar.style.position = 'fixed';
+    toolbar.style.top = '10px';
+    toolbar.style.left = '24%';
+    toolbar.style.transform = 'translateX(-50%)';
+    toolbar.style.zIndex = '1000';
+
+	 
+}
+
 function applyTemplate(templateId) {
     const imgElement = document.getElementById("imgPageLeft");
     const imgPageElement = document.getElementById("imgPageRight");
-     const textAreaLeft = document.getElementById('textAreaLeft');
-    const textAreaRight = document.getElementById('textAreaRight');
-    const micButton  = document.getElementById('micButton');
     const imgSrc = imgElement.src;
     const fileName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
     const fileNumber = parseInt(fileName.match(/\d+/));
@@ -161,30 +210,30 @@ function applyTemplate(templateId) {
 
     if (fileNumber % 2 === 1) { // Odd number
         imgElement.src = getImagePath(templateId);
-        // sendTemplateIdToServer(templateId, fileNumber);
 
-        // Make the left text area visible and set its dimensions
-		
-        textAreaLeft.style.visibility = 'hidden';
-        
-        textAreaRight.style.visibility = 'visible';
-		textAreaRight.readOnly = false;
-		textAreaRight.style.display = "block";
-		toggleSpeechRecognition(textAreaRight);
+        const canvasWidth = imgElement.width;
+        const canvasHeight = imgElement.height;
+
+        initializeQuill('right', canvasWidth, canvasHeight);
+        quillRight.enable(); // Enable editing for the right Quill editor
+        if (quillLeft) quillLeft.enable(false); // Disable editing for the left Quill editor if initialized
     } else { // Even number
         imgPageElement.src = getImagePath(templateId);
-		//sendTemplateIdToServer(templateId, fileNumber);
+
         imgPageElement.onload = function() {
-            canvas = document.createElement('canvas');
+            const canvasWidth = imgPageElement.width;
+            const canvasHeight = imgPageElement.height;
+
+            const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            canvas.width = imgPageElement.width;
-            canvas.height = imgPageElement.height;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
             ctx.drawImage(imgPageElement, 0, 0);
 
             const imageData = ctx.getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data;
             const rgbaColor = `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${imageData[3] / 255})`;
 
-            colorCanvas = document.createElement('canvas');
+            const colorCanvas = document.createElement('canvas');
             const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
             colorCanvas.width = imgElement.width;
             colorCanvas.height = imgElement.height;
@@ -193,18 +242,27 @@ function applyTemplate(templateId) {
 
             const jpegDataUrl = colorCanvas.toDataURL('image/webp');
             imgElement.src = jpegDataUrl;
-           
-            // Make the right text area visible and set its dimensions
-			textAreaLeft.style.display = "block";
-            textAreaLeft.style.visibility = 'visible';
-			textAreaLeft.readOnly = false;
-            textAreaRight.style.visibility = 'hidden';
-        
-			toggleSpeechRecognition(textAreaLeft);
+
+            initializeQuill('left', canvasWidth, canvasHeight);
+            quillLeft.enable(); // Enable editing for the left Quill editor
+            if (quillRight) quillRight.enable(false); // Disable editing for the right Quill editor if initialized
         };
     }
 }
 
+function getTextArea() {
+    const leftContent = quillLeft.root.innerHTML; // Assume quillLeft is initialized
+    const textAreaObject = {
+        content: leftContent, // Content of the textarea
+        position: {
+            left: quillLeft.container.offsetLeft,
+            top: quillLeft.container.offsetTop,
+            width: quillLeft.container.offsetWidth,
+            height: quillLeft.container.offsetHeight
+        }
+    };
+    return textAreaObject;
+}
 
  
 function sendTemplateIdToServer(templateId,fileNumber) {
@@ -231,42 +289,6 @@ function sendTemplateIdToServer(templateId,fileNumber) {
     .catch((error) => {
         console.error('Error:', error);  
     });
-}
-
-
-
-
-
-function getTextArea() {
-   const textArea = document.getElementById('textAreaLeft');
-   // textArea.id = 'myTextArea';
-	//textArea.spellcheck = true;
-   // textArea.style.position = 'absolute';
-    //textArea.style.fontSize = '20px';
-   // textArea.style.backgroundColor = 'transparent';
-    //textArea.style.border = '1px solid black';
-   // textArea.style.color = 'black';
-
-    // Set textarea dimensions to half of the imgPageElement's size
-   // textArea.style.width = `${imgPageElement.clientWidth / 2}px`;
-   // textArea.style.height = `${imgPageElement.clientHeight / 2}px`;
-
-    // Center the textarea within the imgPageElement
-   // textArea.style.left = '100%';
-   // textArea.style.top = '50%';
-   // textArea.style.transform = 'translate(-50%, -50%)';
-	//imgPageElement.appendChild(textArea);
-    textAreaObject = {
-        content: textArea.value, // Content of the textarea
-        position: {
-            left: textArea.offsetLeft,
-            top: textArea.offsetTop,
-            width: textArea.offsetWidth,
-            height: textArea.offsetHeight
-        }
-    };
-	//imgPageElement.removeChild(textArea);
-    return textArea;
 }
 
 
@@ -409,7 +431,7 @@ function changePage(newPage = null) {
   // When launch for the first time
   if (newPage == null) {
 
-    const paramChapter = parseInt(findGetParameter('chapter'));
+   // const paramChapter = parseInt(findGetParameter('chapter'));
     const paramPage = parseInt(findGetParameter('page'));
     const pos = getPosCookie(TITLE);
 
@@ -417,10 +439,7 @@ function changePage(newPage = null) {
     if (!Number.isNaN(paramPage)) {
       newPage = paramPage;
     // If a chapter is indicated in the GET
-    } else if (!Number.isNaN(paramChapter)) {
-      newPage = getChapterFirstPage(paramChapter);
-    // If a page has been saved in the cookie
-    } else if (pos != undefined && pos[VOLUME] != undefined) {
+    }else if (pos != undefined && pos[VOLUME] != undefined) {
       newPage = pos[VOLUME];
     // Else open the first page
     } else {
@@ -448,21 +467,7 @@ function changePage(newPage = null) {
 
   PAGE = newPage;
 
-  if (TCONFIG.bookType == 'webtoon') {
-    document.getElementById('continuousScrollingPages').innerHTML = "";
-    const start = getChapterFirstPage(getCurrentChapter());
-    let end = getChapterFirstPage(getCurrentChapter() + 1) - 1;
-    if (getCurrentChapter() == getChapterCount()) {
-      end = VCONFIG.numPages;
-    }
-    for (let i = start; i <= end; i++) {
-      const img = document.createElement('img');
-      img.src = infoToImageURL(LIBRARY, TITLE, VOLUME, i, TCONFIG.fileExtension);
-      img.loading = "lazy";
-      document.getElementById('continuousScrollingPages').appendChild(img);
-    }
-  }
-
+ 
   if (hasPageChanged) {
 	  //removeTextArea();
 	 
@@ -596,12 +601,7 @@ function refreshDisplayPages() {
     if (UCONFIG.useDoublePage) {
       document.getElementById("bookFoldButton").style.display = null;
       document.getElementById("sidePagesButton").style.display = null;
-    } else {
-      document.getElementById("bookFoldButton").style.display = "none";
-      document.getElementById("sidePagesButton").style.display = "none";
-    }
-
-
+    } 
   }
 
   /* -------------------------- FOR BOTH BOOK MODE AND CONTINUOUS SCROLLING ------------------------------------*/
@@ -624,9 +624,10 @@ function refreshDisplayPages() {
     pageSlider.value = PAGE.toString();
     pageSliderCurrent.innerHTML = PAGE.toString();
     pageSliderTotal.innerHTML = VCONFIG.numPages;
+	previousChapterButton.innerHTML = PAGE.toString(); 
   }
 
-
+ /*
   if (getChapterCount() > 1) {
     // Change currently selected chapter in chapterSelection
     chapterSelection.selectedIndex = getCurrentChapter() - 1;
@@ -645,7 +646,7 @@ function refreshDisplayPages() {
       nextChapterButton.style.display = "none";
     }
   }
-
+*/
   // Move the paper texture arround so it doesn't always looks the same between pages
   document.getElementById("paperTexture").style.backgroundPosition = Math.floor((Math.random() * 100) + 1).toString() + "%" + Math.floor((Math.random() * 100) + 1).toString() + "%";
 
@@ -666,11 +667,11 @@ function setHandlers() {
   if (TCONFIG.bookType != 'webtoon') {
     document.onkeydown = function() {
       //console.log(window.event.keyCode);
-      switch (window.event.keyCode) {
+    /*  switch (window.event.keyCode) {
         case 35: nextChapterButton.click(); break;
         case 36: previousChapterButton.click(); break;
       }
-
+*/
       if (TCONFIG.japaneseOrder) {
         switch (window.event.keyCode) {
           case 33: goPreviousPage(); break;
@@ -767,7 +768,7 @@ function setHandlers() {
     refreshLayoutNavImage();
   }, true);
 
-  previousChapterButton.onclick = function() {
+ /* previousChapterButton.onclick = function() {
     if (chapterSelection.selectedIndex > 0) {
       chapterSelection.selectedIndex -= 1;
       chapterSelection.onchange()
@@ -782,7 +783,7 @@ function setHandlers() {
     }
   }
 
-
+*/
   fullScreenButton.onclick = function() {
     if (document.fullscreenElement) {
         document.exitFullscreen();
@@ -801,11 +802,11 @@ function setHandlers() {
   }
 
 
-  chapterSelection.onchange = function() {
+  /*chapterSelection.onchange = function() {
     changePage(getChapterFirstPage(chapterSelection.selectedIndex + 1));
     document.activeElement.blur(); // Remove focus
   }
-
+*/
   themeSelection.onchange = function() {
 
     // Save value to cookie
@@ -856,7 +857,7 @@ function setHandlers() {
   bookTitle.innerHTML = TCONFIG.title;
 
   // Hide the select chapter menu if there is just one chapter
-  if (getChapterCount() < 2) {
+  /* if (getChapterCount() < 2) {
     document.getElementById("chapterSelectionContainer").style.display = "none";
     nextChapterButton.style.display = "none";
     previousChapterButton.style.display = "none";
@@ -865,7 +866,7 @@ function setHandlers() {
     nextChapterButton.style.display = null;
     previousChapterButton.style.display = null;
   }
-
+*/ 
   // Hide the current volume label if there is just one volume
   if (TCONFIG.numVolumes < 2) {
     document.getElementById("bookVolume").style.display = "none";
@@ -923,14 +924,14 @@ function applyLanguage() {
   themeSelection.selectedIndex = currentThemeSelection;
 
   /* Populate the chapterSelection menu with the chapter from this title */
-  const currentChapterSelection = chapterSelection.selectedIndex;
-  chapterSelection.innerHTML = "";
-  for (let i = 0; i < getChapterCount(); i++) {
-    const option = document.createElement("option");
-    option.text = LCONFIG.readPage.chapter + " " + (i + 1).toString();
-    chapterSelection.add(option);
-  }
-  chapterSelection.selectedIndex = currentChapterSelection;
+ // const currentChapterSelection = chapterSelection.selectedIndex;
+  //chapterSelection.innerHTML = "";
+ // for (let i = 0; i < getChapterCount(); i++) {
+   // const option = document.createElement("option");
+   // option.text = LCONFIG.readPage.chapter + " " + (i + 1).toString();
+   // chapterSelection.add(option);
+  //}
+  //chapterSelection.selectedIndex = currentChapterSelection;
 
   // Refresh the book info at the top
   bookVolume.innerHTML = LCONFIG.titlePage.volume + " " + VOLUME;
@@ -997,21 +998,7 @@ function applyCookie() {
 }
 
 function getDOMElements() {
-  if (TCONFIG.japaneseOrder) {
-
-    imgPageLeft = document.getElementById("imgPageRight");
-    imgPageRight = document.getElementById("imgPageLeft");
-
-    pageSliderCurrent = document.getElementById("pageSliderRight");
-    pageSliderTotal = document.getElementById("pageSliderLeft");
-
-    previousChapterButton = document.getElementById("rightChapterButton");
-    nextChapterButton = document.getElementById("leftChapterButton");
-
-    pageSlider.style.transform = "rotateZ(180deg)";
-
-  } else {
-
+ 
     imgPageLeft = document.getElementById("imgPageLeft");
     imgPageRight = document.getElementById("imgPageRight");
 
@@ -1021,7 +1008,6 @@ function getDOMElements() {
     previousChapterButton = document.getElementById("leftChapterButton");
     nextChapterButton = document.getElementById("rightChapterButton");
 
-  }
 }
 
 function setBookTypeConfig() {
@@ -1073,7 +1059,7 @@ const doublePageButton = document.getElementById("doublePageButton");
 
 const themeSelection = document.getElementById("themeSelection");
 const languageSelection = document.getElementById("languageSelection");
-const chapterSelection = document.getElementById("chapterSelection");
+//const chapterSelection = document.getElementById("chapterSelection");
 const pageSlider = document.getElementById("pageSlider");
 const pageWidthSlider = document.getElementById("pageWidthSlider");
 
