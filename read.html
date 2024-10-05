@@ -20,39 +20,12 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
 
     <style>
-        #bottomControls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        #bottomControls button {
-            background-color: gray;
-            color: black;
-            border: 1px solid black;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-
-        #bottomControls button:hover {
-            background-color: #f0f0f0;
-        }
+     
 
         #container {
             position: relative;
         }
 
-        .text-area-container {
-            position: absolute;
-            display: inline-block;
-        }
 
  #selectTemplateButton {
      position: fixed;
@@ -71,18 +44,7 @@
 
 
 
-        .hidden-textarea {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 200px;
-            height: 100px;
-            border: 2px solid red;
-            background: white;
-            visibility: hidden;
-            z-index: 10;
-            pointer-events: none;
-        }
+     
 
         #navImage {
             position: relative;
@@ -106,16 +68,21 @@
         #selector {
             position: fixed;
             top: 70px;
-            width: 120px;
-            height: 82vh;
-            background-color: black;
+            width: 150px;
+            height: 70vh;
+            background-color: #1A1A2E;
             color: white;
             padding: 10px;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-            overflow: auto;
             transition: right 0.3s ease;
 			right: 10px;
         }
+		 .selector img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the container */
+        }
+		
 		
     </style>
 	</head>
@@ -138,10 +105,12 @@
     </div>
     <div id="navImageContainer" class="zoom">
         <div id="navImage">
+		    
             <img id="imgPageLeft" />
             <div id="textAreaLeft"></div>
             <img id="imgPageRight" />
             <div id="textAreaRight"></div>
+			
             <div id="continuousScrollingPages"></div>
             <div id="filters">
                 <div id="paperTexture"></div>
@@ -186,20 +155,26 @@
 	</div>
 
 	<div id="eyeFilter"></div>
-	<div id="bottomControls">
+	
     <button id="selectTemplateButton">Select Template</button>
-  </div>
+
   
  <div id="selector">
         <section class="vertical-center-4 slider">
-            <div><img src="http://placehold.it/350x100?text=1"></div>
+            <div style="width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #f0f0f0;">
+                 <img src="./img/book2.webp" style="width: 100%; height: 100%; object-fit: cover;">
+           </div>
             <div><img src="http://placehold.it/350x100?text=2"></div>
             <div><img src="http://placehold.it/350x100?text=3"></div>
             <div><img src="http://placehold.it/350x100?text=4"></div>
             <div><img src="http://placehold.it/350x100?text=5"></div>
             <div><img src="http://placehold.it/350x100?text=6"></div>
-            <div><img src="http://placehold.it/350x100?text=7"></div>
-            <div><img src="http://placehold.it/350x100?text=8"></div>
+          <div style="width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #f0f0f0;">
+                 <img src="./img/book1.webp" style="width: 100%; height: 100%; object-fit: cover;">
+           </div>
+           <div style="width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #f0f0f0;">
+                 <img src="./img/book3.webp" style="width: 100%; height: 100%; object-fit: cover;">
+           </div>
             <div><img src="http://placehold.it/350x100?text=9"></div>
             <div><img src="http://placehold.it/350x100?text=10"></div>
  </section>

@@ -123,30 +123,18 @@ function toggleNavMenu() {
   }
   IS_BAR_VISIBLE = !IS_BAR_VISIBLE
 }
+ $('.slider img').on('click', function() {
+            const selectedImageSrc = $(this).attr('src'); // Get the selected image source
+            handleImageSelection(selectedImageSrc); // Call the function to handle the selected image
+        });
 
-function selectTemplate() {
-	const templates = [
-        { id: '1', name: 'Template 1', img:'template1.jpg'},
-        { id: '2', name: 'Template 2', img:'src/images/template1.jpg'},
-        { id: '3', name: 'Template 3', img:'src/images/template1.jpg'}
-    ];
-
-    let templateOptions = 'Select a template:\n';
-    templates.forEach((template, index) => {
-        templateOptions += `${index + 1}: ${template.name}\n`;
-    });
-
-    const choice = prompt(templateOptions);
-
-    if (choice) {
-        const selectedTemplate = templates[parseInt(choice) - 1];
-        if (selectedTemplate) {
-            applyTemplate(selectedTemplate.id);
-        } else {
-            alert('Invalid selection.');
-        }
+    // Function to handle the image selection
+    function handleImageSelection(src) {
+        
+		 applyTemplate(src);
+        
     }
-}
+
 let quillLeft, quillRight;
 function initializeQuill(position, canvasWidth, canvasHeight) {
     const quillWidth = canvasWidth / 2;
@@ -199,7 +187,7 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
 	 
 }
 
-function applyTemplate(templateId) {
+function applyTemplate(src) {
     const imgElement = document.getElementById("imgPageLeft");
     const imgPageElement = document.getElementById("imgPageRight");
     const imgSrc = imgElement.src;
@@ -209,7 +197,7 @@ function applyTemplate(templateId) {
     alert(fileNumber);
 
     if (fileNumber % 2 === 1) { // Odd number
-        imgElement.src = getImagePath(templateId);
+        imgElement.src = src;
 
         const canvasWidth = imgElement.width;
         const canvasHeight = imgElement.height;
@@ -218,7 +206,7 @@ function applyTemplate(templateId) {
         quillRight.enable(); // Enable editing for the right Quill editor
         if (quillLeft) quillLeft.enable(false); // Disable editing for the left Quill editor if initialized
     } else { // Even number
-        imgPageElement.src = getImagePath(templateId);
+        imgPageElement.src = src;
 
         imgPageElement.onload = function() {
             const canvasWidth = imgPageElement.width;
@@ -375,20 +363,6 @@ function toggleSpeechRecognition(textArea) {
 
     // Render SpeechKITT UI
     SpeechKITT.vroom();
-}
-
-document.getElementById('selectTemplateButton').addEventListener('click', selectTemplate);
-function getImagePath(templateId) {
-    switch (templateId) {
-        case '1':
-            return 'template1.webp'; // Adjust paths accordingly
-        case '2':
-            return 'template2.webp';
-        case '3':
-            return 'template3.webp';
-        default:
-            return '';
-    }
 }
 
 function toggleHandlerElement(button, variableName, targets, className, refreshPages = false) {
@@ -692,10 +666,10 @@ function setHandlers() {
 
     pageSlider.oninput = function() {
       changePage(parseInt(pageSlider.value));
-	  getTextArea();
+	  //getTextArea();
 	  //saveImageDataAndText(jpegDataUrl,textAreaObject);
-	  window.location.reload(true);
-	  
+	   window.location.reload(true);
+		  
     }
 
     pageSlider.onmousedown = function() {
