@@ -5,6 +5,7 @@ import { findGetParameter, stringToBoolean, fetchLanguages, infoToPageURL, infoT
 import { setCookie, getCookie, getPosCookie, setPosCookie } from './cookie.js';
  let textArea= null;
  let canvas, colorCanvas;
+ let container = null;
  let jpegDataUrl = null;
  let colorCtx = null;
  let textAreaObject= null;
@@ -75,97 +76,73 @@ function toggleNavMenu() {
     }
 
 let quillLeft, quillRight;
-let editorContainer;
 function initializeQuill(position, canvasWidth, canvasHeight) {
     const quillWidth = canvasWidth / 2;
     const quillHeight = canvasHeight / 2;
     const Font = Quill.import('formats/font');
-    Font.whitelist = ['mirza', 'roboto'];
-    Quill.register(Font, true);
-
-    if (!editorContainer) {
-        editorContainer = document.createElement('div');
-        editorContainer.id = 'editorContainer';
-        document.body.appendChild(editorContainer);
-    }
-
+        Font.whitelist = ['mirza', 'roboto'];
+        Quill.register(Font, true);
     if (position === 'left') {
         const quillLeftDiv = document.createElement('div');
         quillLeftDiv.id = 'quillLeft';
-        quillLeftDiv.style.position = 'fixed'; // Changed to fixed
+        quillLeftDiv.style.position = 'absolute';
         quillLeftDiv.style.left = '350px'; // Adjust as necessary
         quillLeftDiv.style.top = '100px'; // Adjust as necessary
         quillLeftDiv.style.width = `${quillWidth}px`; // Adjust as necessary
         quillLeftDiv.style.height = `${quillHeight}px`; // Adjust as necessary
-        quillLeftDiv.setAttribute('spellcheck', 'true');
-        editorContainer.appendChild(quillLeftDiv);
+		quillLeftDiv.setAttribute('spellcheck', 'true');
+		document.body.appendChild(quillLeftDiv);
         quillLeft = new Quill('#quillLeft', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'font': [] }, { 'size': [] }],
-  ['bold', 'italic', 'underline', 'strike'],      
-  [{ 'color': [] }, { 'background': [] }],          
-  [{ 'script': 'sub'}, { 'script': 'super' }],     
-  [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],     
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  [{ 'indent': '-1'}, { 'indent': '+1' }],         
-  [{ 'direction': 'rtl' }],                          
-  [{ 'align': [] }],
-  ['link', 'image']      
-                ]
-            }
+            theme: 'snow'
         });
-        toggleSpeechRecognition(document.querySelector('#quillLeft .ql-editor'));
-
+		toggleSpeechRecognition(document.querySelector('#quillLeft .ql-editor'));
+    
     } else if (position === 'right') {
         const quillRightDiv = document.createElement('div');
         quillRightDiv.id = 'quillRight';
-        quillRightDiv.style.position = 'fixed'; // Changed to fixed
+        quillRightDiv.style.position = 'absolute';
         quillRightDiv.style.left = '350px'; // Adjust as necessary
         quillRightDiv.style.top = '100px'; // Adjust as necessary
         quillRightDiv.style.width = `${quillWidth}px`; // Adjust as necessary
         quillRightDiv.style.height = `${quillHeight}px`; // Adjust as necessary
-        quillRightDiv.setAttribute('spellcheck', 'true');
-        editorContainer.appendChild(quillRightDiv);
+		quillRightDiv.setAttribute('spellcheck', 'true');
+        document.body.appendChild(quillRightDiv);
         quillRight = new Quill('#quillRight', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                   [{ 'font': [] }, { 'size': [] }],
-  ['bold', 'italic', 'underline', 'strike'],      
-  [{ 'color': [] }, { 'background': [] }],          
-  [{ 'script': 'sub'}, { 'script': 'super' }],     
-  [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],     
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  [{ 'indent': '-1'}, { 'indent': '+1' }],         
-  [{ 'direction': 'rtl' }],                          
-  [{ 'align': [] }],
-  ['link', 'image']      
-                ]
-            }
+            theme: 'snow'
         });
-        toggleSpeechRecognition(document.querySelector('#quillRight .ql-editor'));
+		toggleSpeechRecognition(document.querySelector('#quillRight .ql-editor'));
     }
-
+	
+	
+    
     var toolbar = document.querySelector('.ql-toolbar');
     toolbar.style.display = 'inline-block';
     toolbar.style.marginBottom  = '5px';
     toolbar.style.backgroundColor = 'lightpink';
     toolbar.style.width = '25%';
-    toolbar.style.position = 'fixed'; // Changed to fixed
+    toolbar.style.position = 'fixed';
     toolbar.style.top = '10px';
     toolbar.style.left = '24%';
     toolbar.style.transform = 'translateX(-50%)';
     toolbar.style.zIndex = '1000';
-}
 
-function removeQuill() {
-     if (editorContainer) {
-        document.body.removeChild(editorContainer); // Remove the entire container
-        editorContainer = null; // Clear the reference
-        console.log("Editor container removed successfully.");
-        console.log("Editor container removed successfully.");
+	 
+}
+function removeQuillLeft() {
+    const quillLeftDiv = document.getElementById('quillLeft');
+	
+    if (quillLeftDiv) {
+		document.body.removeChild(quillLeftDiv);
+        const quillEditor = document.querySelector('.ql-editor');
+   alert(quillEditor);
+    if (quillEditor) {
+        // Set contenteditable to false
+        quillEditor.contentEditable = 'false';
+        console.log("Quill editor is now read-only.");
+    } else {
+        console.log("Quill editor not found.");
+    }
+                                           		// Remove from DOM
     }
 }
 
@@ -173,11 +150,10 @@ function removeQuill() {
 function destroyQuill(position) {
     if (position === 'left' && quillLeft) {
         quillLeft.enable(false); // Disable the editor
-        removeQuill(); // Call the function to remove the quillLeft div
+        removeQuillLeft(); // Call the function to remove the quillLeft div
         quillLeft = null; // Clear reference
     } else if (position === 'right' && quillRight) {
-        quillRight.enable(false); 
-		removeQuill();// Disable the editor
+        quillRight.enable(false); // Disable the editor
         const quillRightDiv = document.getElementById('quillRight');
         if (quillRightDiv) {
             quillRightDiv.parentNode.removeChild(quillRightDiv); // Remove from DOM
@@ -191,6 +167,13 @@ function destroyQuill(position) {
         toolbar.parentNode.removeChild(toolbar); // Remove the toolbar from the DOM
     }
 }
+
+// Ensure that this function runs after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Call your function or handle initialization here
+	 removeQuillLeft();
+});
+
 
 
 function applyTemplate(src) {
@@ -235,23 +218,24 @@ function applyTemplate(src) {
 // Keep the canvas height fixed
             colorCanvas.height = imgElement.height; // Fixed height
 
-const marginSize = 40; // Adjust this value to change the thickness of the margins
-const decorationWidth = marginSize * 2; // Width for the decorations
+// Define the desired margin size (in pixels)
+          const marginSize = 20; // Adjust this value as needed
 
 // Calculate the top and bottom positions for drawing
-const topPosition = marginSize; // Start drawing after the top margin
-const bottomPosition = colorCanvas.height - marginSize; // Stop drawing before the bottom margin
+          const topPosition = marginSize; // Start drawing after the top margin
+          const bottomPosition = colorCanvas.height - marginSize; // Stop drawing before the bottom margin
 
 // Fill the canvas with the specified color, leaving margins at the top and bottom
-colorCtx.fillStyle = rgbaColor; 
-colorCtx.fillRect(0, topPosition, colorCanvas.width, colorCanvas.height - marginSize * 2);
+          colorCtx.fillStyle = rgbaColor;
+            colorCtx.fillRect(0, topPosition, colorCanvas.width, colorCanvas.height - marginSize * 2);
 
-// Set the margin color to red and fill the top and bottom margins
-colorCtx.fillStyle = getRandomColor();  // Solid red for margins
-colorCtx.fillRect(0, 0, colorCanvas.width, marginSize); // Top margin
-colorCtx.fillRect(0, bottomPosition, colorCanvas.width, marginSize); // Bottom margin
-generateFunDecoration(bottomPosition,marginSize,colorCanvas,colorCtx);
- const jpegDataUrl = colorCanvas.toDataURL('image/webp');
+// Optionally, if you want to see the margins, you can fill them with a different color
+          colorCtx.fillStyle = rgbaColor; // Example: semi-transparent white for margins
+          colorCtx.fillRect(0, 0, colorCanvas.width, marginSize); // Top margin
+          colorCtx.fillRect(0, bottomPosition, colorCanvas.width, marginSize); // Bottom margin
+
+
+            const jpegDataUrl = colorCanvas.toDataURL('image/webp');
             imgElement.src = jpegDataUrl;
              position = 'left';
             initializeQuill(position, canvasWidth, canvasHeight);'left'
@@ -274,67 +258,8 @@ function getTextArea() {
     };
     return textAreaObject;
 }
-// Function to draw a star
-function drawStar(ctx, x, y, radius, color) {
-    ctx.fillStyle = color; // Set star color
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-        ctx.lineTo(x + radius * Math.cos((i * 2 * Math.PI) / 5), y + radius * Math.sin((i * 2 * Math.PI) / 5));
-        ctx.lineTo(x + (radius / 2) * Math.cos(((i * 2 + 1) * Math.PI) / 5), y + (radius / 2) * Math.sin(((i * 2 + 1) * Math.PI) / 5));
-    }
-    ctx.closePath();
-    ctx.fill();
-}
 
-// Function to draw a balloon
-function drawBalloon(ctx, x, y, width, height, color) {
-    ctx.fillStyle = color; // Set balloon color
-    ctx.beginPath();
-    ctx.ellipse(x, y - height / 2, width / 2, height / 2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.stroke(); // Add balloon outline
-
-    // Draw a string for the balloon
-    ctx.beginPath();
-    ctx.moveTo(x, y); // Starting point at the bottom of the balloon
-    ctx.lineTo(x, y + Math.random() * 30 + 10); // Random length for the string
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.stroke(); // Draw the balloon string
-}
-function getRandomColor() {
-    const r = Math.floor(Math.random() * 256); // Random red value
-    const g = Math.floor(Math.random() * 256); // Random green value
-    const b = Math.floor(Math.random() * 256); // Random blue value
-    return `rgba(${r}, ${g}, ${b}, 1)`; // Return random color
-}
  
- function generateFunDecoration(bottomPosition,marginSize,colorCanvas,colorCtx) {
-    const decorationY = bottomPosition - marginSize; // Position for the decoration
-
-    // Randomly generate stars
-    const numStars = Math.floor(Math.random() * 5) + 5; // Random number of stars between 5 and 10
-    for (let i = 0; i < numStars; i++) {
-        const x = Math.random() * colorCanvas.width; // Random x position
-        const size = Math.random() * 25 + 10; // Random size between 10 and 35
-        const color = `rgba(255, ${Math.floor(Math.random() * 256)}, 0, 1)`; // Random yellow to red color
-
-        drawStar(colorCtx, x, decorationY, size, color);
-    }
-
-    // Randomly generate balloons
-    const numBalloons = Math.floor(Math.random() * 5) + 5; // Random number of balloons between 5 and 10
-    for (let i = 0; i < numBalloons; i++) {
-        const x = Math.random() * colorCanvas.width; // Random x position
-        const height = Math.random() * 50 + 30; // Random height between 30 and 80
-        const width = Math.random() * 30 + 20; // Random width between 20 and 50
-        const color = `rgba(${Math.floor(Math.random() * 256)}, 0, ${Math.floor(Math.random() * 256)}, 1)`; // Random color
-
-        drawBalloon(colorCtx, x, decorationY, width, height, color);
-    }
-}
 function sendTemplateIdToServer(templateId,fileNumber) {
     console.log('Sending template ID to server:');
     console.log('Template ID:', templateId);

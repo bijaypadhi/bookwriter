@@ -18,7 +18,10 @@
     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+<script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <style>
      
 
@@ -70,7 +73,7 @@
             top: 70px;
             width: 150px;
             height: 70vh;
-            background-color: #1A1A2E;
+            background-color: green;
             color: white;
             padding: 10px;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
@@ -82,8 +85,32 @@
             height: 100%;
             object-fit: cover; /* Cover the container */
         }
-		
-		
+  .panel {
+            height: 80vh;
+            width: 200px; /* Adjusted width */
+            position: fixed;
+            top: 10px;
+            left: -200px; /* Start off-screen */
+            background-color: green;
+            overflow-x: hidden;
+            padding-top: 60px;
+            color: white;
+            text-align: left;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Optional shadow for better visibility */
+            transition: left 0.5s ease; /* Animation for floating effect */
+        }
+
+        .panel.visible {
+            left: 0; /* Slide into view */
+        }
+
+        .panel h2 {
+            padding-left: 20px;
+        }
+
+        .panel p {
+            padding-left: 20px;
+        }	
     </style>
 	</head>
 
@@ -103,6 +130,7 @@
             <div id="configButton" class="button icon"></div>
         </div>
     </div>
+	
     <div id="navImageContainer" class="zoom">
         <div id="navImage">
 		    
@@ -155,7 +183,7 @@
 	</div>
 
 	<div id="eyeFilter"></div>
-	
+	 
     <button id="selectTemplateButton">Select Template</button>
 
   
@@ -179,15 +207,23 @@
             <div><img src="http://placehold.it/350x100?text=10"></div>
  </section>
  </div>
+ <div id="helpPanel" class="panel visible"> <!-- Add the visible class by default -->
+        <h2>Help Tips</h2>
+        <p>This is where you can provide help tips or guidance for this page.</p>
+        <p>Tip 1: Make sure to follow the instructions carefully.</p>
+        <p>Tip 2: Check for any updates regularly.</p>
+        <p>Tip 3: If you encounter issues, refer to the FAQ section.</p>
+    </div>
+
+
 </body>
 <script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
 <script src="./js/speechkiit.js"></script>
-<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
-<script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
 <script type="text/javascript">
     $(document).on('ready', function () {
+	             alert("dddd");
         $(".vertical-center-4").slick({
             dots: true,
             vertical: true,
@@ -196,6 +232,7 @@
             slidesToScroll: 2
         });
     });
+	
 </script>
 
 </html>

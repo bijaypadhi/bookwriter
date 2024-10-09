@@ -20,7 +20,18 @@ body.lightTheme {
   --menu-background-color: rgb(220, 220, 220);
   --menu-text-color: black;
 }
-
+body.kidTheme {
+    --background-image: url("../img/background-imperfections.webp"); /* A fun, colorful background image */
+	--background-gradient: linear-gradient(0deg, rgb(255, 182, 193) 0%, rgb(255, 240, 245) 100%);
+    --menu-background-color: #ffcc80; /* Light orange for menu */
+    --menu-text-color: #5d4037; /* Chocolate brown text for contrast */
+    --button-background-color: #ff8a65; /* Soft red for buttons */
+    --button-text-color: #ffffff; /* White text on buttons */
+    --link-color: #4db6ac; /* Turquoise for links */
+    --hover-button-color: #f48fb1; /* Pink on hover */
+    --text-color: #212121; /* Dark grey for main text */
+    --accent-color: #ffd54f; /* Bright yellow for accents */
+  }
 body {
   padding: 0;
   margin: 0;

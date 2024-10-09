@@ -41,7 +41,8 @@
       "themeSelection":
       {
         "darkTheme": "Dark theme",
-        "lightTheme": "Light theme"
+        "lightTheme": "Light theme",
+		"kidTheme": "kidTheme"
       }
     }
 
