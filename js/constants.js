@@ -10,5 +10,5 @@ export function booksURL() {return          "https://storage.googleapis.com/book
 
  for local changes
 */
-export function websiteName() {return       "Okuma Example"}
+export function websiteName() {return       "KFZ BookWriter"}
 export function defaultLanguage() {return   "en"}

@@ -550,7 +550,7 @@ function toggleHandlerElement(button, variableName, targets, className, refreshP
 
 function goNextPage() {
     if (UCONFIG.doublePage) {
-        changePage(PAGE + 2);
+        changePage(PAGE + 1);
 
 
     } else {
@@ -560,7 +560,7 @@ function goNextPage() {
 
 function goPreviousPage() {
     if (UCONFIG.doublePage) {
-        changePage(PAGE - 2);
+        changePage(PAGE - 1);
     } else {
         changePage(PAGE - 1);
     }
@@ -790,22 +790,6 @@ function setHandlers() {
     if (TCONFIG.bookType != 'webtoon') {
         document.onkeydown = function() {
 
-            if (TCONFIG.japaneseOrder) {
-                switch (window.event.keyCode) {
-                    case 33:
-                        goPreviousPage();
-                        break;
-                    case 34:
-                        goNextPage();
-                        break;
-                    case 39:
-                        goPreviousPage();
-                        break;
-                    case 37:
-                        goNextPage();
-                        break;
-                }
-            } else {
                 switch (window.event.keyCode) {
                     case 34:
                         goPreviousPage();
@@ -819,7 +803,7 @@ function setHandlers() {
                     case 39:
                         goNextPage();
                         break;
-                }
+                
             }
         };
 
@@ -923,12 +907,6 @@ function setHandlers() {
         }
     }
 
-
-    /*chapterSelection.onchange = function() {
-    changePage(getChapterFirstPage(chapterSelection.selectedIndex + 1));
-    document.activeElement.blur(); // Remove focus
-  }
-*/
     themeSelection.onchange = function() {
 
         // Save value to cookie
@@ -978,18 +956,6 @@ function setHandlers() {
     // Refresh the book info at the top
     bookTitle.innerHTML = TCONFIG.title;
 
-    // Hide the select chapter menu if there is just one chapter
-    /* if (getChapterCount() < 2) {
-    document.getElementById("chapterSelectionContainer").style.display = "none";
-    nextChapterButton.style.display = "none";
-    previousChapterButton.style.display = "none";
-  } else {
-    document.getElementById("chapterSelectionContainer").style.display = null;
-    nextChapterButton.style.display = null;
-    previousChapterButton.style.display = null;
-  }
-*/
-    // Hide the current volume label if there is just one volume
     if (TCONFIG.numVolumes < 2) {
         document.getElementById("bookVolume").style.display = "none";
     }
@@ -1149,11 +1115,7 @@ function setBookTypeConfig() {
         case "imageset":
             BOOKTYPE.bookShadowButton = true;
             break;
-        case "webtoon":
-            BOOKTYPE.bookShadowButton = true;
-            BOOKTYPE.touchAction = "pan-y"
-            break;
-        case "manga":
+        
         case "book":
             BOOKTYPE.useDoublePage = true;
             BOOKTYPE.bookFoldButton = true;
