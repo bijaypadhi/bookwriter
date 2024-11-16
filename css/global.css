@@ -22,7 +22,7 @@ body.lightTheme {
 }
 body.kidTheme {
     --background-image: url("../img/background-imperfections.webp"); /* A fun, colorful background image */
-	--background-gradient: linear-gradient(0deg, rgb(255, 182, 193) 0%, rgb(255, 240, 245) 100%);
+	--background-gradient: linear-gradient(0deg, rgb(100, 200, 255) 0%, rgb(135, 206, 250) 100%);
     --menu-background-color: #ffcc80; /* Light orange for menu */
     --menu-text-color: #5d4037; /* Chocolate brown text for contrast */
     --button-background-color: #ff8a65; /* Soft red for buttons */

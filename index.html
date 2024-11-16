@@ -9,13 +9,21 @@
   	<link rel="manifest" href="./js/manifest.json">
   	<link type="text/css" rel="stylesheet" href="./css/home.css"/>
     <link type="text/css" rel="stylesheet" href="./css/global.css"/>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js" type="text/javascript" charset="utf-8"></script>
+	 <script src="./js/jquery.jqlouds.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
+      <div id="sky"></div>
     <div id="container">
       <h2 id="availableBooks"></h2>
       <div id="books"></div>
     </div>
   </body>
   <script type="module" src="./js/home.js"></script>
-
+   
+<script>
+jQuery(function($) {
+  $('#sky').jQlouds({ skyHeight: 223, wind: true });
+});
+</script>
 </html>

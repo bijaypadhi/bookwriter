@@ -17,57 +17,17 @@
     <link rel="stylesheet" type="text/css" href="./slick/slick.css">
     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.bubble.css" />
+    
     <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
 <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
-
+ <script src="./js/jquery.jqlouds.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+ 
     <style>
      
 
-        #container {
-            position: relative;
-        }
-
-
- #selectTemplateButton {
-     position: fixed;
-    background-color: gray;
-    color: black;
-    border: 1px solid black;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    position: absolute;
-  top: -730px;
-  left: 600px;
-  margin: 10px;
-}
-
-
-
-     
-
-        #navImage {
-            position: relative;
-        }
-
-        #imgPageLeft,
-        #imgPageRight {
-            position: relative;
-        }
-
-        #textAreaLeft,
-        #textAreaRight {
-            position: absolute;
-            display: none;
-            z-index: 10;
-            width: 200px; /* Adjust as needed */
-            height: 100px; /* Adjust as needed */
-            background: transparent;
-        }
-
+      
         #selector {
             position: fixed;
             top: 70px;
@@ -85,42 +45,103 @@
             height: 100%;
             object-fit: cover; /* Cover the container */
         }
-  .panel {
-            height: 80vh;
-            width: 200px; /* Adjusted width */
+		
+		/* for left panal */
+		
+		 @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes movePupils {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(5px, 5px); }
+            50% { transform: translate(0, 5px); }
+            75% { transform: translate(-5px, 5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .curvy-panel {
             position: fixed;
-            top: 10px;
-            left: -200px; /* Start off-screen */
-            background-color: green;
-            overflow-x: hidden;
-            padding-top: 60px;
+            left: 0;
+            top: 10%;
+            width: 250px;
+            height: 60%;
+            background: linear-gradient(135deg, #ffcc99, #ff99cc);
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             color: white;
-            text-align: left;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Optional shadow for better visibility */
-            transition: left 0.5s ease; /* Animation for floating effect */
+            font-family: Arial, sans-serif;
+            overflow-y: auto;
+            animation: slideIn 1s ease-out;
         }
 
-        .panel.visible {
-            left: 0; /* Slide into view */
+        .curvy-panel h2 {
+            margin-top: 0;
+            text-align: center;
         }
 
-        .panel h2 {
-            padding-left: 20px;
+        .curvy-panel p {
+            margin-bottom: 20px;
         }
 
-        .panel p {
-            padding-left: 20px;
-        }	
-    </style>
+        .eye {
+            width: 25px;
+            height: 25px;
+            background: aqua;
+            border-radius: 50%;
+            position: absolute;
+            top: -1px; /* Positioning eyes above the panel */
+            left: 50%; 
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: black;
+            border-radius: 50%;
+            animation: movePupils 5s infinite;
+        }
+
+        .eye-right {
+            margin-left: 25px; /* Adjust spacing between eyes */
+        }
+
+        .eye-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            top: -20px;
+        }
+		.line-highlight {
+    border: 2px solid #FFD700;  /* Golden outline */
+    border-radius: 15px;         /* Curvy shape */
+    padding: 4px;                /* Adjust spacing as needed */
+    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5); /* Soft glow */
+    background-color: rgba(255, 250, 200, 0.1); /* Light background */
+}
+      </style>
 	</head>
 
 <body>
+     <div id="sky"></div>
     <div id="loaderContainer">
         <svg id="loader" viewBox="25 25 50 50">
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
         </svg>
     </div>
-    <div id=topMenu class="navMenu">
+    <div id=topMenu class="navMenu"  style="display: none;">
         <div class="navContainer">
             <div id="bookInfo">
                 <h2 id="bookTitle"></h2>
@@ -132,12 +153,17 @@
     </div>
 	
     <div id="navImageContainer" class="zoom">
-        <div id="navImage">
-		    
-            <img id="imgPageLeft" />
-            <div id="textAreaLeft"></div>
-            <img id="imgPageRight" />
-            <div id="textAreaRight"></div>
+       
+		    <div id="navImage">
+			
+                <img id="imgPageLeft" />
+                <div id="textAreaLeft"></div>
+            
+         
+                <img id="imgPageRight"  />
+                <div id="textAreaRight"></div>
+          
+            
 			
             <div id="continuousScrollingPages"></div>
             <div id="filters">
@@ -207,7 +233,11 @@
             <div><img src="http://placehold.it/350x100?text=10"></div>
  </section>
  </div>
- <div id="helpPanel" class="panel visible"> <!-- Add the visible class by default -->
+<div class="curvy-panel">
+        <div class="eye-container">
+            <div class="eye"><div class="pupil"></div></div>
+            <div class="eye eye-right"><div class="pupil"></div></div>
+        </div>
         <h2>Help Tips</h2>
         <p>This is where you can provide help tips or guidance for this page.</p>
         <p>Tip 1: Make sure to follow the instructions carefully.</p>
@@ -222,17 +252,18 @@
 <script src="./js/speechkiit.js"></script>
 
 <script type="text/javascript">
-    $(document).on('ready', function () {
-	             alert("dddd");
-        $(".vertical-center-4").slick({
-            dots: true,
-            vertical: true,
-            centerMode: true,
-            slidesToShow: 4,
-            slidesToScroll: 2
+   $(document).on('ready', function () {
+           
+            $(".vertical-center-4").slick({
+                dots: true,
+                vertical: true,
+                centerMode: true,
+                slidesToShow: 4,
+                slidesToScroll: 2
+            });
+            $('#sky').jQlouds({ skyHeight: 223, wind: true });
+           
         });
-    });
-	
 </script>
 
 </html>

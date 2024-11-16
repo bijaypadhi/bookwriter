@@ -57,7 +57,7 @@ export function applyTheme() {
   const body = document.getElementsByTagName("body")[0];
   const cookieThemeSelection = parseInt(getCookie('themeSelection'));
   const themeSelection = !isNaN(cookieThemeSelection) ? cookieThemeSelection : 0;
-  const themeNames = ['darkTheme', 'lightTheme'];
+  const themeNames = ['darkTheme', 'lightTheme','kidTheme'];
   for (let i = 0; i < themeNames.length; i++) {
     body.classList.remove(themeNames[i]);
   }
