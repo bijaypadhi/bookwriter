@@ -26,20 +26,61 @@
  
     <style>
      
-
-      
-        #selector {
-            position: fixed;
-            top: 70px;
-            width: 150px;
-            height: 70vh;
-            background-color: green;
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
             color: white;
             padding: 10px;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-            transition: right 0.3s ease;
-			right: 10px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 24px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
         }
+
+        #prevPageButton {
+            left: 10px;
+        }
+
+        #nextPageButton {
+            right: 10px;
+        }
+
+        #prevPageButton:hover,
+        #nextPageButton:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+       #selector {
+    position: fixed;
+    bottom: 0; /* Place at the bottom */
+    left: 0; /* Align to the left */
+    width: 100%; /* Full width of the page */
+    height: 14%; /* Adjust height based on content */
+    background-color: green;
+    color: white;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* Shadow above the carousel */
+    overflow: hidden;
+    z-index: 9999; /* Ensure it stays above other elements */
+}
+
+#selector .slick-slide {
+    margin: 0 10px; /* Space between slides */
+}
+
+#selector .slick-list {
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+#selector .slick-track {
+    display: flex;
+    align-items: center;
+}
 		 .selector img {
             width: 100%;
             height: 100%;
@@ -131,6 +172,50 @@
     box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5); /* Soft glow */
     background-color: rgba(255, 250, 200, 0.1); /* Light background */
 }
+#handAnimation {
+    position: fixed;
+    bottom: 25%; /* Position above the slider */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    text-align: center;
+}
+
+.handText {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 10px;
+    animation: fadeInOut 3s infinite;
+}
+
+.hand {
+    width: 50px;
+    height: 50px;
+    background: url('./img/icon/finger-up.png') no-repeat center center; /* Replace with a pointing hand icon */
+    background-size: contain;
+    animation: moveHand 2s infinite ease-in-out;
+}
+
+@keyframes moveHand {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-10px, -10px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
       </style>
 	</head>
 
@@ -141,6 +226,11 @@
             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
         </svg>
     </div>
+	  <div id="handAnimation">
+    <p class="handText">Add Text Here </p>
+    <div class="hand"></div>
+</div>
+	  <button id="selectTemplateButton" style="display: none;">Select Template</button>
     <div id=topMenu class="navMenu"  style="display: none;">
         <div class="navContainer">
             <div id="bookInfo">
@@ -151,11 +241,12 @@
             <div id="configButton" class="button icon"></div>
         </div>
     </div>
-	
+	 <button id="prevPageButton" class="nav-button">&larr;</button> 
+	 <button id="nextPageButton" class="nav-button">&rarr;</button>
     <div id="navImageContainer" class="zoom">
-       
+             
 		    <div id="navImage">
-			
+			   
                 <img id="imgPageLeft" />
                 <div id="textAreaLeft"></div>
             
@@ -174,7 +265,8 @@
             </div>
         </div>
     </div>
-    <div id="bottomMenu" class="navMenu">
+	
+    <div id="bottomMenu" class="navMenu" style="display: none;">
         <div class="navContainer">
             <div id="leftChapterButton" class="button icon"></div>
             <div id="chapterSelectionContainer">
@@ -209,10 +301,7 @@
 	</div>
 
 	<div id="eyeFilter"></div>
-	 
-    <button id="selectTemplateButton">Select Template</button>
-
-  
+ 
  <div id="selector">
         <section class="vertical-center-4 slider">
             <div style="width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #f0f0f0;">
@@ -254,13 +343,41 @@
 <script type="text/javascript">
    $(document).on('ready', function () {
            
-            $(".vertical-center-4").slick({
-                dots: true,
-                vertical: true,
-                centerMode: true,
-                slidesToShow: 4,
-                slidesToScroll: 2
-            });
+        $(".vertical-center-4").slick({
+        dots: true,
+        infinite: true,
+        slidesToShow: 4,
+        slidesToScroll: 2,
+        centerMode: true,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        arrows: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    infinite: true,
+                    dots: true,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    });
             $('#sky').jQlouds({ skyHeight: 223, wind: true });
            
         });

@@ -550,7 +550,7 @@ function toggleHandlerElement(button, variableName, targets, className, refreshP
 
 function goNextPage() {
     if (UCONFIG.doublePage) {
-        changePage(PAGE + 1);
+        changePage(PAGE + 2);
 
 
     } else {
@@ -560,7 +560,7 @@ function goNextPage() {
 
 function goPreviousPage() {
     if (UCONFIG.doublePage) {
-        changePage(PAGE - 1);
+        changePage(PAGE - 2);
     } else {
         changePage(PAGE - 1);
     }
@@ -807,7 +807,15 @@ function setHandlers() {
             }
         };
 
+        document.getElementById("nextPageButton").onclick = function() {
+        console.log("Next button clicked");
+        goNextPage();
+    };
 
+    document.getElementById("prevPageButton").onclick = function() {
+        console.log("Previous button clicked");
+        goPreviousPage();
+    };
         pageSlider.oninput = function() {
 
             changePage(parseInt(pageSlider.value));
