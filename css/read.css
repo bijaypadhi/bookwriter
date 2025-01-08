@@ -37,9 +37,9 @@ body.continuousScrolling {
 
 .slider {
   -webkit-appearance: none;
-  height: 0.5em;
-  border-radius: 1em;
-  background: lightgray;
+  /* height: 0.5em;
+  border-radius: 1em; */
+  /* background: lightgray; */
   outline: none;
   --slider-thumb-size: 1;
 

@@ -80,11 +80,12 @@
             position: fixed;
             left: 0;
             width: 250px;
+            max-height: 80%;
             background: linear-gradient(135deg, #ffcc99, #ff99cc);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             color: black;
             font-family: Arial, sans-serif;
-            overflow-y: auto;
+            overflow-y: hidden; 
             animation: slideIn 1s ease-out;
         }
 
@@ -184,15 +185,19 @@
                 opacity: 1;
             }
         }
-
+        #accordion {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
         #accordion h3 {
             cursor: pointer;
             background: #805ad5;
             color: white;
             margin: 0;
+            position: sticky;
         }
 
-        #accordion div {
+        #accordion .accordion-title {
             display: flex;
             align-items: center;
             background: #805ad5;
@@ -211,6 +216,8 @@
             padding: 10px;
             background: white;
             border: 1px solid #ddd;
+            overflow-y: auto;
+            max-height: 550px; 
         }
 
         .sticker {
@@ -265,7 +272,7 @@
 
     <div class="curvy-panel">
         <div id="accordion">
-            <div>
+            <div class="accordion-title">
                 <img src="./img/icon/keyboard-solid.svg" />
                 <h3>Text</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
@@ -274,7 +281,7 @@
 
             </div>
 
-            <div>
+            <div class="accordion-title">
                 <img src="./img/icon/face-smile-solid.svg" />
                 <h3>Props</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
@@ -290,35 +297,23 @@
                 <img src="./img/props/rb_75201.png" style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
             </div>
 
-            <div>
+            <div class="accordion-title">
                 <img src="./img/icon/image-solid.svg" />
                 <h3>Scenes</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
             </div>
-            <div draggable="true" class="inner-content">
+            <div draggable="true" class="inner-content" style="display: none;">
                 <div id="selector">
                     <section class="vertical-center-4 slider">
-                        <div>
-                            <img src="./img/book2.webp" style="width: 100%; height: 100px; object-fit: cover;">
-                        </div>
-                        <div><img src="http://placehold.it/350x100?text=2"></div>
-                        <div><img src="http://placehold.it/350x100?text=3"></div>
-                        <div><img src="http://placehold.it/350x100?text=4"></div>
-                        <div><img src="http://placehold.it/350x100?text=5"></div>
-                        <div><img src="http://placehold.it/350x100?text=6"></div>
-                        <div>
-                            <img src="./img/book1.webp" style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                        <div>
-                            <img src="./img/book3.webp" style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                        <div><img src="http://placehold.it/350x100?text=9"></div>
-                        <div><img src="http://placehold.it/350x100?text=10"></div>
+                            <img src="./img/book2.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                            <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                            <img src="./img/book3.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                            <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
                     </section>
                 </div>
             </div>
 
-            <div>
+            <div class="accordion-title">
                 <img src="./img/icon/circle-info-solid.svg" />
                 <h3>Help Tips</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />

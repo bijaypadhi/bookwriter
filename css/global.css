@@ -16,13 +16,13 @@ body.darkTheme {
 
 body.lightTheme {
   --background-image: url("../img/background-imperfections.webp");
-  --background-gradient: linear-gradient(0deg, rgb(197 197 197) 0%, rgb(245 245 245) 100%);
+  --background-gradient: linear-gradient(0deg, rgb(85 157 103) 0%, #7d91bf 90%);
   --menu-background-color: rgb(220, 220, 220);
   --menu-text-color: black;
 }
 body.kidTheme {
     --background-image: url("../img/background-imperfections.webp"); /* A fun, colorful background image */
-	--background-gradient: linear-gradient(0deg, rgb(100, 200, 255) 0%, rgb(135, 206, 250) 100%);
+	--background-gradient: linear-gradient(0deg, #33d595 0%, rgb(126 205 255) 67%);
     --menu-background-color: #ffcc80; /* Light orange for menu */
     --menu-text-color: #5d4037; /* Chocolate brown text for contrast */
     --button-background-color: #ff8a65; /* Soft red for buttons */
