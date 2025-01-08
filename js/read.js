@@ -1199,3 +1199,49 @@ fetchLanguages()
     .then(changePage)
     .then(setHandlers)
     .then(applyCookie);
+
+    //---------------------------------------------------------------------------------
+    //accordian open and close
+    document.addEventListener("DOMContentLoaded", () => {
+        // Select all accordion headers
+        const accordionHeaders = document.querySelectorAll("#accordion > div:not(.inner-content)");
+    
+        accordionHeaders.forEach(header => {
+            header.addEventListener("click", () => {
+                const panel = header.nextElementSibling;
+                const caretIcon = header.querySelector(".caret-icon");
+    
+                // Close all panels except the one being clicked
+                accordionHeaders.forEach(otherHeader => {
+                    const otherPanel = otherHeader.nextElementSibling;
+                    const otherCaretIcon = otherHeader.querySelector(".caret-icon");
+    
+                    if (otherPanel !== panel) {
+                        otherPanel.style.display = "none";
+                        if (otherCaretIcon) {
+                            otherCaretIcon.src = "./img/icon/caret-down-solid.svg"; // Update to caret-down icon
+                        }
+                    }
+                });
+    
+                // Toggle the clicked panel
+                const isOpen = panel.style.display === "block";
+                panel.style.display = isOpen ? "none" : "block";
+    
+                // Update the caret icon for the clicked panel
+                if (caretIcon) {
+                    caretIcon.src = isOpen
+                        ? "./img/icon/caret-down-solid.svg"
+                        : "./img/icon/caret-up-solid.svg";
+                }
+            });
+        });
+    
+        // Drag-and-drop functionality
+        const stickers = document.querySelectorAll(".sticker img");
+        stickers.forEach(sticker => {
+            sticker.addEventListener("dragstart", event => {
+                event.dataTransfer.setData("text/plain", event.target.src);
+            });
+        });
+    });
