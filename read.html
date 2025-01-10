@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="./img/icon.webp" />
     <link rel="manifest" href="./js/manifest.json">
     <link type="text/css" rel="stylesheet" href="./css/read.css" />
+    <link type="text/css" rel="stylesheet" href="./read.css" />
     <link type="text/css" rel="stylesheet" href="./css/navImage.css" />
     <link type="text/css" rel="stylesheet" href="./css/navMenu.css" />
     <link type="text/css" rel="stylesheet" href="./css/config.css" />
@@ -21,7 +22,7 @@
 
     <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
     <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <!-- Slick CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.8.1/slick.css" />
@@ -32,219 +33,6 @@
 
     <!-- Slick JS -->
     <script src="https://cdn.jsdelivr.net/jquery.slick/1.8.1/slick.min.js"></script>
-    <style>
-        .nav-button {
-            position: absolute;
-            bottom: 0%;
-            transform: translateY(-50%);
-            border: none;
-            color: white;
-            cursor: pointer;
-            z-index: 10;
-            font-size: 24px;
-            border-radius: 50%;
-        }
-
-        #prevPageButton {
-            left: 10px;
-        }
-
-        #nextPageButton {
-            right: 10px;
-        }
-
-        #prevPageButton:hover,
-        #nextPageButton:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .selector img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .curvy-panel {
-            position: fixed;
-            left: 0;
-            width: 250px;
-            max-height: 80%;
-            background: linear-gradient(135deg, #ffcc99, #ff99cc);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            color: black;
-            font-family: Arial, sans-serif;
-            overflow-y: hidden; 
-            animation: slideIn 1s ease-out;
-        }
-
-        .curvy-panel h2 {
-            margin-top: 0;
-            text-align: center;
-        }
-
-        .curvy-panel p {
-            margin-bottom: 20px;
-        }
-
-        .line-highlight {
-            border: 2px solid #FFD700;
-            border-radius: 15px;
-            padding: 4px;
-            box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5);
-            background-color: rgba(255, 250, 200, 0.1);
-        }
-
-        #handAnimation {
-            position: fixed;
-            bottom: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            text-align: center;
-        }
-
-        .handText {
-            font-size: 16px;
-            color: white;
-            margin-bottom: 10px;
-            animation: fadeInOut 3s infinite;
-        }
-
-        .hand {
-            width: 50px;
-            height: 50px;
-            background: url('./img/icon/finger-up.png') no-repeat center center;
-            background-size: contain;
-            animation: moveHand 2s infinite ease-in-out;
-        }
-
-        .curvy-button-panel {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-family: Arial, sans-serif;
-            overflow-y: auto;
-            animation: slideIn 1s ease-out;
-        }
-
-        .curvy-button-panel div {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-left: 10px;
-            padding-right: 10px;
-            gap: 15px;
-            border: 1px solid white;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .curvy-button-panel div img {
-            width: 25px;
-            height: 25px;
-        }
-
-        .curvy-button-panel div:hover {
-            background-color: #805ad5;
-            cursor: pointer;
-        }
-
-        @keyframes moveHand {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            50% {
-                transform: translate(-10px, -10px);
-            }
-
-            100% {
-                transform: translate(0, 0);
-            }
-        }
-
-        @keyframes fadeInOut {
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-        #accordion {
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        #accordion h3 {
-            cursor: pointer;
-            background: #805ad5;
-            color: white;
-            margin: 0;
-            position: sticky;
-        }
-
-        #accordion .accordion-title {
-            display: flex;
-            align-items: center;
-            background: #805ad5;
-            padding: 10px;
-            border: 1px solid #ddd;
-            gap: 10px;
-        }
-
-        #accordion img {
-            width: 25px;
-            height: 25px;
-        }
-
-        #accordion .inner-content {
-            display: none;
-            padding: 10px;
-            background: white;
-            border: 1px solid #ddd;
-            overflow-y: auto;
-            max-height: 550px; 
-        }
-
-        .sticker {
-            margin: 10px 0;
-            cursor: grab;
-            text-align: center;
-        }
-
-        .sticker img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        #navImage {
-            position: relative;
-        }
-
-        .sticker-dropped {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            cursor: move;
-        }
-    </style>
 </head>
 
 <body>
@@ -287,14 +75,24 @@
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
             </div>
             <div draggable="true" class="inner-content" style="display: none;">
-                <img src="./img/props/397057493_11510142.png"
-                    style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
-                <img src="./img/props/rb_110550.png" style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
-                <img src="./img/props/rb_166625.png" style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
-                <img src="./img/props/rb_45760.png" style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
-                <img src="./img/props/rb_6322.png" style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
-                <img src="./img/props/rb_74063.png" style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
-                <img src="./img/props/rb_75201.png" style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
+                <div id="selector">
+                    <section class="vertical-center-4 slider">
+                        <img src="./img/props/397057493_11510142.png"
+                            style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
+                        <img src="./img/props/rb_110550.png"
+                            style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
+                        <img src="./img/props/rb_166625.png"
+                            style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
+                        <img src="./img/props/rb_45760.png"
+                            style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
+                        <img src="./img/props/rb_6322.png"
+                            style="width: 45%; height: 100px; object-fit: fill;margin: 2px;">
+                        <img src="./img/props/rb_74063.png"
+                            style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
+                        <img src="./img/props/rb_75201.png"
+                            style="width: 45%; height: 100px; object-fit:fill;margin: 2px;">
+                    </section>
+                </div>
             </div>
 
             <div class="accordion-title">
@@ -305,10 +103,10 @@
             <div draggable="true" class="inner-content" style="display: none;">
                 <div id="selector">
                     <section class="vertical-center-4 slider">
-                            <img src="./img/book2.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                            <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                            <img src="./img/book3.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                            <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/book2.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/book3.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
                     </section>
                 </div>
             </div>
@@ -328,6 +126,10 @@
     </div>
 
     <div class="curvy-button-panel">
+        <div>
+            <img src="./img/icon/upload-solid.svg" />
+            <h3>Publish Book</h3>
+        </div>
         <div>
             <img src="./img/icon/share-solid.svg" />
             <h3>Share Book</h3>
@@ -421,46 +223,5 @@
 <script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
 <script src="./js/speechkiit.js"></script>
-
-<script type="text/javascript">
-    $(document).on('ready', function () {
-        $(".vertical-center-4").slick({
-            dots: false,
-            infinite: true,
-            slidesToShow: 4,
-            slidesToScroll: 2,
-            centerMode: true,
-            autoplay: true,
-            autoplaySpeed: 3000,
-            arrows: true,
-            responsive: [
-                {
-                    breakpoint: 1024,
-                    settings: {
-                        slidesToShow: 3,
-                        slidesToScroll: 1,
-                        infinite: true,
-                        dots: true,
-                    }
-                },
-                {
-                    breakpoint: 768,
-                    settings: {
-                        slidesToShow: 2,
-                        slidesToScroll: 1,
-                    }
-                },
-                {
-                    breakpoint: 480,
-                    settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                    }
-                }
-            ]
-        });
-      
-    });
-</script>
 
 </html>
