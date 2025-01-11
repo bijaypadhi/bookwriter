@@ -287,7 +287,6 @@ function applyTemplate(src) {
             colorCtx.fillStyle = getRandomColor(); // Solid red for margins
             colorCtx.fillRect(0, 0, colorCanvas.width, marginSize); // Top margin
             colorCtx.fillRect(0, bottomPosition, colorCanvas.width, marginSize); // Bottom margin
-            generateFunDecoration(bottomPosition, marginSize, colorCanvas, colorCtx);
             const jpegDataUrl = colorCanvas.toDataURL('image/webp');
             imgElement.src = jpegDataUrl;
             position = 'left';
@@ -307,95 +306,6 @@ function getRandomColor() {
     return `rgba(${r}, ${g}, ${b}, 1)`; // Return random color
 }
 
-function generateFunDecoration(bottomPosition, marginSize, colorCanvas, colorCtx) {
-    const decorationY = bottomPosition - marginSize;
-
-    // Randomly generate stars with sparkle effect
-    const numStars = Math.floor(Math.random() * 5) + 10; // 10 to 15 stars
-    for (let i = 0; i < numStars; i++) {
-        const x = Math.random() * colorCanvas.width;
-        const size = Math.random() * 20 + 15; // Size between 15 and 35
-        const opacity = Math.random() * 0.5 + 0.5; // Soft shimmer effect
-        const color = `rgba(255, ${Math.floor(Math.random() * 200 + 55)}, 50, ${opacity})`;
-
-        drawStar(colorCtx, x, decorationY, size, color);
-    }
-
-    // Generate colorful balloons with strings
-    const numBalloons = Math.floor(Math.random() * 5) + 8; // 8 to 13 balloons
-    for (let i = 0; i < numBalloons; i++) {
-        const x = Math.random() * colorCanvas.width;
-        const height = Math.random() * 40 + 60; // Height between 60 and 100
-        const width = Math.random() * 20 + 30; // Width between 30 and 50
-        const color = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 256)}, 0.9)`;
-
-        drawBalloon(colorCtx, x, decorationY, width, height, color);
-        drawBalloonString(colorCtx, x + width / 2, decorationY + height); // Adds a string to each balloon
-    }
-
-    // Generate soft clouds for a whimsical feel
-    const numClouds = Math.floor(Math.random() * 3) + 3; // 3 to 5 clouds
-    for (let i = 0; i < numClouds; i++) {
-        const x = Math.random() * colorCanvas.width;
-        const y = Math.random() * 50 + decorationY - 50; // Positioned slightly above decorationY
-        const size = Math.random() * 50 + 50; // Cloud size between 50 and 100
-        drawCloud(colorCtx, x, y, size);
-    }
-
-    // Generate confetti for extra celebration
-    const numConfetti = Math.floor(Math.random() * 20) + 20; // 20 to 40 pieces of confetti
-    for (let i = 0; i < numConfetti; i++) {
-        const x = Math.random() * colorCanvas.width;
-        const y = decorationY - Math.random() * 50;
-        const size = Math.random() * 5 + 5; // Small confetti size
-        const color = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 1)`;
-
-        drawConfetti(colorCtx, x, y, size, color);
-    }
-}
-
-// Draw functions for each element
-function drawStar(ctx, x, y, size, color) {
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.moveTo(x, y);
-    for (let i = 0; i < 5; i++) {
-        ctx.lineTo(x + size * Math.cos((18 + i * 72) * Math.PI / 180), y - size * Math.sin((18 + i * 72) * Math.PI / 180));
-        ctx.lineTo(x + (size / 2) * Math.cos((54 + i * 72) * Math.PI / 180), y - (size / 2) * Math.sin((54 + i * 72) * Math.PI / 180));
-    }
-    ctx.closePath();
-    ctx.fill();
-}
-
-function drawBalloon(ctx, x, y, width, height, color) {
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.ellipse(x, y, width, height, 0, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-function drawBalloonString(ctx, x, y) {
-    ctx.beginPath();
-    ctx.strokeStyle = '#555';
-    ctx.moveTo(x, y);
-    ctx.lineTo(x, y + 20);
-    ctx.stroke();
-}
-
-function drawCloud(ctx, x, y, size) {
-    ctx.beginPath();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.arc(x, y, size * 0.6, 0, Math.PI * 2);
-    ctx.arc(x + size * 0.5, y, size * 0.7, 0, Math.PI * 2);
-    ctx.arc(x - size * 0.5, y, size * 0.7, 0, Math.PI * 2);
-    ctx.arc(x, y - size * 0.3, size * 0.8, 0, Math.PI * 2);
-    ctx.fill();
-}
-
-function drawConfetti(ctx, x, y, size, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, size, size);
-}
 
 function sendTemplateIdToServer(templateId, fileNumber) {
     console.log('Sending template ID to server:');
