@@ -854,7 +854,8 @@ function setHandlers() {
 
 
         pageWidthSlider.oninput = function() {
-            UCONFIG.pageWidthSlider = pageWidthSlider.value;
+            // UCONFIG.pageWidthSlider = pageWidthSlider.value;
+            UCONFIG.pageWidthSlider = 70;
             refreshLayoutNavImage();
         }
 
@@ -866,7 +867,8 @@ function setHandlers() {
         toggleHandlerElement("bookShadowButton", "continuousScrolling_bookShadow", ["bookShadowButton", "navImage"], ["enabled", "bookShadow"]);
 
         pageWidthSlider.oninput = function() {
-            UCONFIG.pageWidthSlider = pageWidthSlider.value;
+            // UCONFIG.pageWidthSlider = pageWidthSlider.value;
+            UCONFIG.pageWidthSlider = 70;
             document.getElementById("continuousScrollingPages").style.width = UCONFIG.pageWidthSlider + "vw";
         }
 
@@ -880,7 +882,7 @@ function setHandlers() {
             imgPageLeft.style.display = "none";
             imgPageRight.style.display = "none";
             sliderContainer.style.display = "none";
-            document.getElementById("continuousScrollingPages").style.width = pageWidthSlider.value + "vw";
+            document.getElementById("continuousScrollingPages").style.width = 70 + "vw";
         }
 
     }

@@ -45,7 +45,7 @@
     position: fixed;
     left: 0;
     width: 250px;
-    max-height: 75%;
+    max-height: 80%;
     background: linear-gradient(135deg, #ffcc99, #ff99cc);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     color: black;
@@ -182,7 +182,7 @@
     background: white;
     border: 1px solid #ddd;
     overflow-y: auto;
-    max-height: 500px; 
+    max-height: 450px; 
 }
 
 .sticker {
