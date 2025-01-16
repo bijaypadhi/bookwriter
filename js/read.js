@@ -28,7 +28,7 @@ let jpegDataUrl = null;
 let colorCtx = null;
 let textAreaObject = null;
 let position = null;
-
+let userId = null;
 
 function getImage(url) {
     return new Promise(function(resolve, reject) {
@@ -296,6 +296,7 @@ function applyTemplate(src) {
             if (quillRight) quillRight.enable(false); // Disable editing for the right Quill editor if initialized
         };
     }
+	  sendUserIdToServer(fileNumber, userId);
 }
 
 
@@ -306,35 +307,58 @@ function getRandomColor() {
     return `rgba(${r}, ${g}, ${b}, 1)`; // Return random color
 }
 
+function sendUserIdToServer(fileNumber, userId) {
+    const imgLeftElement = document.getElementById("imgPageLeft");
+    const imgRightElement = document.getElementById("imgPageRight");
 
-function sendTemplateIdToServer(templateId, fileNumber) {
-    console.log('Sending template ID to server:');
-    console.log('Template ID:', templateId);
+    // Get the image sources
+    const imgLeftSrc = imgLeftElement.src;
+    const imgRightSrc = imgRightElement.src;
+
+    console.log('Sending user ID to server:');
+    console.log('User ID:', userId);
+    console.log('File Number:', fileNumber);
+    console.log('Left Image Source:', imgLeftSrc);
+    console.log('Right Image Source:', imgRightSrc);
 
     const formData = new FormData();
-    formData.append('templateId', templateId);
+    formData.append('userId', userId);
     formData.append('fileNumber', fileNumber);
-    fetch('http://127.0.0.1:5000/save-image', {
-            method: 'POST',
-            body: formData,
-        })
+    formData.append('fileName', 'firstbook');
+    formData.append('imgLeftSrc', imgLeftSrc);
+    formData.append('imgRightSrc', imgRightSrc);
+
+    fetch('http://localhost:8080/api/minio/save-image', {
+        method: 'POST',
+        body: formData,
+    })
         .then(response => {
             console.log('Response Status:', response.status); // Log status
+            const contentType = response.headers.get('content-type');
             if (!response.ok) {
                 return response.text().then(text => {
-                    throw new Error(text)
+                    throw new Error(`Server error: ${text}`);
                 });
             }
-            return response.json();
+
+            // Check if response is JSON
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                return response.text(); // Handle plain text responses
+            }
         })
         .then(data => {
-            console.log('Success:', data);
+            if (typeof data === 'string') {
+                console.log('Server response (plain text):', data);
+            } else {
+                console.log('Server response (JSON):', data);
+            }
         })
         .catch((error) => {
             console.error('Error:', error);
         });
 }
-
 
 
 
@@ -1015,9 +1039,78 @@ function getDOMElements() {
 
     previousChapterButton = document.getElementById("leftChapterButton");
     nextChapterButton = document.getElementById("rightChapterButton");
+     
+}
+ document.getElementById("saveButton").onclick = function() {
+       saveBook();
+    };
+	 document.getElementById("updateBookInfo").onclick = function() {
+       updateBookInfo();
+    };
+function saveBook() {
+    const bookName = "firstbook"; 
+    const userId = '5ccl8yOZicftkSQyzrHhtL0HhFD3'; //findGetParameter('userId');
 
+    const formData = new FormData();
+    formData.append("userID", userId);
+    formData.append("bookName", bookName);
+
+    // API call with FormData
+    fetch('http://localhost:8080/api/book-infos', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to save book');
+        })
+        .then(data => {
+            console.log('Book saved successfully:', data);
+            alert('Book saved successfully!');
+            // Redirect to the book writer page after saving the book
+            window.location.href = 'http://localhost:8000/bookwriter/';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving the book');
+        });
 }
 
+function updateBookInfo() {
+    // Replace with actual dynamic values for bookName and userID
+    const bookName = "firstbook";
+    const userId = "5ccl8yOZicftkSQyzrHhtL0HhFD3";
+     const formData = new FormData();
+    formData.append("userID", userId);
+    formData.append("bookName", bookName);
+    // Alert for debugging
+    alert(`User ID: ${userId}, Book Name: ${bookName}`);
+
+    // Construct the URL with query parameters
+    const url = `http://localhost:8080/api/book-infos/1`;
+
+    // Make the PUT request
+    fetch(url, {
+        method: 'PUT',
+		body: formData,
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to save book');
+        })
+        .then(data => {
+            console.log('Book updated successfully:', data);
+            alert('Book updated successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating the book');
+        });
+}
 
 
 function setBookTypeConfig() {
