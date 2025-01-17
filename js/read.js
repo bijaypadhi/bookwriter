@@ -3,6 +3,7 @@ import {
     zoom
 } from './directive.js';
 import * as CONSTANTS from './constants.js';
+import { userId } from './home.js';
 import {
     findGetParameter,
     stringToBoolean,
@@ -28,7 +29,6 @@ let jpegDataUrl = null;
 let colorCtx = null;
 let textAreaObject = null;
 let position = null;
-let userId = null;
 
 function getImage(url) {
     return new Promise(function(resolve, reject) {
@@ -43,6 +43,10 @@ function getImage(url) {
     })
 }
 
+if (!userId) {
+	alert("No user Id Do something");
+   userId="5ccl8yOZicftkSQyzrHhtL0HhFD3"; // Ensure no extra underscore and format is correct
+}
 function refreshLayoutNavImage() {
     const margin = UCONFIG.pageWidthSlider / 100;
     const availableScreenWidth = window.innerWidth * margin;
@@ -296,7 +300,7 @@ function applyTemplate(src) {
             if (quillRight) quillRight.enable(false); // Disable editing for the right Quill editor if initialized
         };
     }
-	  sendUserIdToServer(fileNumber, userId);
+	  sendUserIdToServer(fileNumber);
 }
 
 
@@ -307,11 +311,10 @@ function getRandomColor() {
     return `rgba(${r}, ${g}, ${b}, 1)`; // Return random color
 }
 
-function sendUserIdToServer(fileNumber, userId) {
+function sendUserIdToServer(fileNumber) {
     const imgLeftElement = document.getElementById("imgPageLeft");
     const imgRightElement = document.getElementById("imgPageRight");
-
-    // Get the image sources
+   // Get the image sources
     const imgLeftSrc = imgLeftElement.src;
     const imgRightSrc = imgRightElement.src;
 
@@ -395,24 +398,6 @@ function saveImageDataAndText(jpegDataUrl, textAreaObject) {
         });
 }
 
-
-// Helper function to convert dataURL to Blob
-function dataURLToBlob(jpegDataUrl) {
-
-    const parts = jpegDataUrl.split(',');
-    const byteString = atob(parts[1]);
-    const mimeString = parts[0].split(':')[1].split(';')[0];
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const intArray = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < byteString.length; i++) {
-        intArray[i] = byteString.charCodeAt(i);
-    }
-
-    return new Blob([arrayBuffer], {
-        type: mimeString
-    });
-}
 
 function toggleSpeechRecognition(quill) {
     if (!annyang) {
@@ -1047,24 +1032,68 @@ function getDOMElements() {
 	 document.getElementById("updateBookInfo").onclick = function() {
        updateBookInfo();
     };
+	
 function saveBook() {
-    const bookName = "firstbook"; 
-    const userId = '5ccl8yOZicftkSQyzrHhtL0HhFD3'; //findGetParameter('userId');
+    const bookName = TITLE;
+    // Get image elements
+    const imgPageLeft = document.getElementById('imgPageLeft');
+    const imgPageRight = document.getElementById('imgPageRight');
 
-    const formData = new FormData();
-    formData.append("userID", userId);
-    formData.append("bookName", bookName);
+    // Extract file number from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileNumber = parseInt(urlParams.get('page'));
 
-    // API call with FormData
-    fetch('http://localhost:8080/api/book-infos', {
-        method: 'POST',
-        body: formData,
-    })
+    if (isNaN(fileNumber)) {
+        alert("Could not extract a valid file number from the URL.");
+        return;
+    }
+
+    if (!imgPageLeft || !imgPageRight) {
+        alert('Missing images for saving the book.');
+        return;
+    }
+
+    // Generate dynamic filenames
+    const rightFileName = `${fileNumber}.webp`;
+    const leftFileName = `${fileNumber - 1}.webp`;
+
+    alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
+
+    // Helper function to fetch image as Blob
+    const fetchImageAsBlob = (src) => {
+        return fetch(src)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch image: ${src}`);
+                }
+                return response.blob();
+            });
+    };
+
+    // Fetch blobs and send API request
+    Promise.all([
+        fetchImageAsBlob(imgPageLeft.src),
+        fetchImageAsBlob(imgPageRight.src)
+    ])
+        .then(([leftBlob, rightBlob]) => {
+            // Prepare FormData
+            const formData = new FormData();
+            formData.append("userId", userId);
+            formData.append("bookName", bookName);
+            formData.append("fileLeft", leftBlob, leftFileName);
+            formData.append("fileRight", rightBlob, rightFileName);
+
+            // API call
+            return fetch('http://localhost:8080/api/book-infos', {
+                method: 'POST',
+                body: formData,
+            });
+        })
         .then(response => {
-            if (response.ok) {
-                return response.json();
+            if (!response.ok) {
+                throw new Error('Failed to save book');
             }
-            throw new Error('Failed to save book');
+            return response.json();
         })
         .then(data => {
             console.log('Book saved successfully:', data);
@@ -1074,15 +1103,14 @@ function saveBook() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error saving the book');
+            alert('Error saving the book: ' + error.message);
         });
 }
 
 function updateBookInfo() {
     // Replace with actual dynamic values for bookName and userID
-    const bookName = "firstbook";
-    const userId = "5ccl8yOZicftkSQyzrHhtL0HhFD3";
-     const formData = new FormData();
+    const bookName = TITLE;
+    const formData = new FormData();
     formData.append("userID", userId);
     formData.append("bookName", bookName);
     // Alert for debugging

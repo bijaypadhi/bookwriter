@@ -3,7 +3,7 @@ import * as CONSTANTS from './constants.js';
 import { findGetParameter, applyTheme, infoToPageURL, infoToImageURL, chooseAndFetchLanguage, fetchBook, fetchLibrary } from './tools.js';
 
 const libraryParam = findGetParameter('library');
-const userId ='5ccl8yOZicftkSQyzrHhtL0HhFD3' //findGetParameter('userId');
+export const userId ='5ccl8yOZicftkSQyzrHhtL0HhFD3' //findGetParameter('userId');
 
 let LIBRARY = libraryParam ? libraryParam : CONSTANTS.booksURL();
 
