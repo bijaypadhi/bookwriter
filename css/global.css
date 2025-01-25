@@ -10,26 +10,29 @@ body, select, option {
 body.darkTheme {
   --background-image: url("../img/background-imperfections.webp");
   --background-gradient: linear-gradient(0deg, rgb(63 85 21) 0%, #56407d 90%);
-  --menu-background-color: rgb(30, 30, 30);
+  --menu-background-color: rgb(86 64 125);
+  --menu-background-hover-color: rgb(63 85 21);
   --menu-text-color: white;
 }
 
 body.lightTheme {
   --background-image: url("../img/background-imperfections.webp");
   --background-gradient: linear-gradient(0deg, rgb(85 157 103) 0%, #7d91bf 90%);
-  --menu-background-color: rgb(220, 220, 220);
-  --menu-text-color: black;
+  --menu-background-color: #7d91bf;
+  --menu-background-hover-color: rgb(85 157 103);
+  --menu-text-color: white;
 }
 body.kidTheme {
     --background-image: url("../img/background-imperfections.webp"); /* A fun, colorful background image */
 	--background-gradient: linear-gradient(0deg, #33d595 0%, rgb(126 205 255) 67%);
-    --menu-background-color: #ffcc80; /* Light orange for menu */
-    --menu-text-color: #5d4037; /* Chocolate brown text for contrast */
+    --menu-background-color: #7ecdff; /* Light orange for menu */
+    --menu-text-color: white; /* Chocolate brown text for contrast */
     --button-background-color: #ff8a65; /* Soft red for buttons */
     --button-text-color: #ffffff; /* White text on buttons */
     --link-color: #4db6ac; /* Turquoise for links */
     --hover-button-color: #f48fb1; /* Pink on hover */
     --text-color: #212121; /* Dark grey for main text */
+    --menu-background-hover-color: #33d595;
     --accent-color: #ffd54f; /* Bright yellow for accents */
   }
 body {

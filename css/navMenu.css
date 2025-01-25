@@ -7,17 +7,20 @@
   z-index: 10;
   transition: .2s transform;
   pointer-events: none;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .navMenu > .navContainer {
   background-color: var(--menu-background-color);
-  width: max-content;
+  width: 80%;
   display: grid;
   grid-auto-flow: column;
-  place-content: center;
-  place-items: center;
+  place-content: initial;
+  place-items: initial;
   box-shadow: 0 0 2em rgba(0, 0, 0, 0.5);
   pointer-events: all;
+  overflow: auto;
 }
 
 .navMenu .icon {
@@ -35,12 +38,19 @@
 .navMenu > .navContainer > div {
   text-align: center;
   height: var(--footer-height);
-  padding: 0.5em 1em 0.5em 1em;
+  /* padding: 0.5em 1em 0.5em 1em; */
   box-sizing: border-box;
   display: grid;
   grid-auto-flow: column;
   place-items: center;
   place-content: center;
+  border-radius: 10px;
+  border: 1px solid white;
+  background-color: white;
+  margin: 10px;
+}
+.navMenu > .navContainer > div >img {
+  width: 150px;
 }
 
 .navMenu * {
@@ -135,7 +145,8 @@
 
 
 #bottomMenu {
-  bottom: 0;
+  bottom: 20px;
+  display: flex;
 }
 
 #bottomMenu > .navContainer {

@@ -1,13 +1,21 @@
 .nav-button {
-    position: absolute;
+    /* position: absolute; */
     bottom: 0%;
-    transform: translateY(-50%);
+    /* transform: translateY(-50%); */
     border: none;
     color: white;
     cursor: pointer;
     z-index: 10;
-    font-size: 24px;
+    font-size: 10px;
     border-radius: 50%;
+}
+#bottom-btn-container{
+    display: flex !important;
+    justify-content: space-between !important;
+}
+.nav-button>img{
+    width: 50px !important;
+    height: 50px !important;
 }
 
 #prevPageButton {
@@ -46,9 +54,9 @@
     left: 0;
     width: 250px;
     max-height: 80%;
-    background: linear-gradient(135deg, #ffcc99, #ff99cc);
+    /* background: linear-gradient(135deg, #ffcc99, #ff99cc); */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: black;
+    /* color: black; */
     font-family: Arial, sans-serif;
     overflow-y: hidden; 
     animation: slideIn 1s ease-out;
@@ -114,6 +122,7 @@
     border: 1px solid white;
     border-radius: 8px;
     margin-bottom: 10px;
+    color: var(--menu-text-color);
 }
 
 .curvy-button-panel div img {
@@ -122,7 +131,7 @@
 }
 
 .curvy-button-panel div:hover {
-    background-color: #805ad5;
+    background-color: var(--menu-background-hover-color);
     cursor: pointer;
 }
 
@@ -156,7 +165,7 @@
 }
 #accordion h3 {
     cursor: pointer;
-    background: #805ad5;
+    /* background: #805ad5; */
     color: white;
     margin: 0;
     position: sticky;
@@ -165,7 +174,7 @@
 #accordion .accordion-title {
     display: flex;
     align-items: center;
-    background: #805ad5;
+    /* background: #805ad5; */
     padding: 10px;
     border: 1px solid #ddd;
     gap: 10px;

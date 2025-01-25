@@ -761,13 +761,13 @@ function setHandlers() {
         toggleHandlerElement("bookShadowButton", "bookShadow", ["bookShadowButton", "navImage"], ["enabled", "bookShadow"]);
 
         zoom(undefined, undefined, function(actionType) {
-            if (actionType == "clickMiddle") {
-                toggleNavMenu();
+            // if (actionType == "clickMiddle") {
+                // toggleNavMenu();
 
-            } else {
+            // } else {
 
-                toggleNavMenu();
-            }
+                // toggleNavMenu();
+            // }
         });
         document.getElementsByClassName("zoom")[0].click();
 
@@ -791,10 +791,10 @@ function setHandlers() {
             document.getElementById("continuousScrollingPages").style.width = UCONFIG.pageWidthSlider + "vw";
         }
 
-        document.getElementById("navImageContainer").onclick = function() {
-            toggleNavMenu();
+        // document.getElementById("navImageContainer").onclick = function() {
+        //     toggleNavMenu();
 
-        }
+        // }
 
         {
             document.getElementsByTagName('body')[0].classList.add("continuousScrolling");
