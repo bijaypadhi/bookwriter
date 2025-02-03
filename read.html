@@ -19,7 +19,32 @@
     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link type="text/css" rel="stylesheet" href="./css/quill.bubble.css" />
+<script>
+    var TogetherJSConfig = {
+    // ENABLE CURSOR FEATURES
+    dontShowClicks: false,
+    cloneClicks: true,
+    ignoreMessages: [], // Clear ignored messages to allow cursor updates
+    enableElementClicks: true,
 
+    // WEBRTC CONFIG (REQUIRED FOR CURSORS)
+    disableWebRTC: false,
+        // ESSENTIAL SETTINGS
+    hubBase: "https://sprinkle-lizard-peripheral.glitch.me/",
+     // or "tjs_madlibs" depending on your project
+    autoStart: true,  // Set to true if you want auto-start behavior
+    suppressJoinConfirmation: true,
+    disableCursor: false,  // Ensure cursor feature is enabled
+
+    // Custom Room Prefix and Limits (if relevant for your setup)
+    findRoom: {
+        prefix: "togetherjsmadlibs",
+        max: 5
+    }
+};
+</script>
+ 
+<script src="./js/togetherjs-min.js"></script>
     <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="./js/quill.js" type="text/javascript" charset="utf-8"></script>
