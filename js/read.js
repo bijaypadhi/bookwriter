@@ -1106,6 +1106,30 @@ function saveBook() {
             alert('Error saving the book: ' + error.message);
         });
 }
+function populateBottomMenu(LIBRARY, TITLE, VOLUME, totalPages, TCONFIG) {
+    const navContainer = document.querySelector("#bottomMenu .navContainer");
+    navContainer.innerHTML = ""; // Clear existing content
+
+    for (let page = 1; page <= totalPages; page++) {
+        const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, page, ".webp");
+        
+        const imgElement = document.createElement("img");
+        imgElement.src = leftPageURL;
+        imgElement.dataset.pageNumber = page; // Store the page number in a data attribute
+
+        // Add click event listener
+        imgElement.addEventListener("click", function () {
+            const clickedPage = this.dataset.pageNumber;
+            changePage(parseInt(clickedPage)); 
+        });
+
+        const divElement = document.createElement("div");
+        divElement.appendChild(imgElement);
+        
+        navContainer.appendChild(divElement);
+    }
+}
+
 
 function updateBookInfo() {
     // Replace with actual dynamic values for bookName and userID
@@ -1318,3 +1342,4 @@ fetchLanguages()
         });
       
     });
+populateBottomMenu(LIBRARY, TITLE, VOLUME, 25, TCONFIG);
