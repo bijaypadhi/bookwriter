@@ -314,89 +314,85 @@ function getRandomColor() {
 function sendUserIdToServer(fileNumber) {
     const imgLeftElement = document.getElementById("imgPageLeft");
     const imgRightElement = document.getElementById("imgPageRight");
-   // Get the image sources
+
+    // Ensure image elements exist
+    if (!imgLeftElement || !imgRightElement) {
+        alert('Missing images for saving the book.');
+        return;
+    }
+
+    // Get the image sources
     const imgLeftSrc = imgLeftElement.src;
     const imgRightSrc = imgRightElement.src;
 
-    console.log('Sending user ID to server:');
-    console.log('User ID:', userId);
-    console.log('File Number:', fileNumber);
-    console.log('Left Image Source:', imgLeftSrc);
-    console.log('Right Image Source:', imgRightSrc);
+    // Validate fileNumber
+    if (isNaN(fileNumber)) {
+        alert("Could not extract a valid file number from the URL.");
+        return;
+    }
 
-    const formData = new FormData();
-    formData.append('userId', userId);
-    formData.append('fileNumber', fileNumber);
-    formData.append('fileName', 'firstbook');
-    formData.append('imgLeftSrc', imgLeftSrc);
-    formData.append('imgRightSrc', imgRightSrc);
-
-    fetch('http://localhost:8080/api/minio/save-image', {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => {
-            console.log('Response Status:', response.status); // Log status
-            const contentType = response.headers.get('content-type');
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Server error: ${text}`);
-                });
-            }
-
-            // Check if response is JSON
-            if (contentType && contentType.includes('application/json')) {
-                return response.json();
-            } else {
-                return response.text(); // Handle plain text responses
-            }
-        })
-        .then(data => {
-            if (typeof data === 'string') {
-                console.log('Server response (plain text):', data);
-            } else {
-                console.log('Server response (JSON):', data);
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-}
+    // Generate filenames
+    const leftFileName = `${fileNumber}.webp`;  // Adjust extension as needed
+    const rightFileName = `${fileNumber+1}.webp`;
 
 
+    alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
 
-function saveImageDataAndText(jpegDataUrl, textAreaObject) {
-    const formData = new FormData();
+    // Helper function to fetch image as Blob
+    const fetchImageAsBlob = (src) => {
+        return fetch(src)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch image: ${src}`);
+                }
+                return response.blob();
+            });
+    };
 
-    // Update the textAreaObject with the content from the textarea
-    alert(colorCanvas);
-    // Convert the canvas data URL to a Blob
-    jpegDataUrl = colorCanvas.toDataURL('image/webp');
-    const imageBlob = dataURLToBlob(jpegDataUrl);
+    // Fetch blobs for both images
+    Promise.all([
+        fetchImageAsBlob(imgLeftSrc),
+        fetchImageAsBlob(imgRightSrc)
+    ])
+    .then(([leftBlob, rightBlob]) => {
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append("userId", userId);  // Ensure `userId` is defined
+        formData.append("bookName", TITLE);  // Ensure `bookName` is defined
+        formData.append("fileLeft", leftBlob, leftFileName);
+        formData.append("fileRight", rightBlob, rightFileName);
 
-    // Append the image file and text area data to the form
-    formData.append('imageFile', imageBlob, '2.webp'); // Customize the filename as needed
-    formData.append('textAreaData', JSON.stringify(textAreaObject)); // Send the entire textAreaObject as JSON
-
-    fetch('http://127.0.0.1:5000/save-data', {
+        // Send the request to the server
+        return fetch('http://localhost:8080/api/minio/save-image', {
             method: 'POST',
             body: formData,
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text)
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Data saved successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error saving data:', error);
         });
+    })
+    .then(response => {
+        console.log('Response Status:', response.status); // Log status
+        const contentType = response.headers.get('content-type');
+
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Server error: ${text}`);
+            });
+        }
+
+        // Parse response based on content type
+        return contentType && contentType.includes('application/json') 
+            ? response.json() 
+            : response.text();
+    })
+    .then(data => {
+        console.log(typeof data === 'string' 
+            ? `Server response (plain text): ${data}` 
+            : `Server response (JSON):`, data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
+
 
 
 function toggleSpeechRecognition(quill) {
@@ -634,11 +630,11 @@ function refreshDisplayPages() {
         /* Load the current page*/
         {
 
-            const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE, TCONFIG.fileExtension);
+             const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE, TCONFIG.fileExtension) + "?t=" + new Date().getTime();
 
             if (UCONFIG.doublePage) {
 
-                const rightPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE + 1, TCONFIG.fileExtension);
+                const rightPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE + 1, TCONFIG.fileExtension) + "?t=" + new Date().getTime();
 
                 addLoading();
                 getImage(rightPageURL).then(function(successUrl) {
@@ -1054,8 +1050,8 @@ function saveBook() {
     }
 
     // Generate dynamic filenames
-    const rightFileName = `${fileNumber}.webp`;
-    const leftFileName = `${fileNumber - 1}.webp`;
+    const leftFileName = `${fileNumber}.webp`;  // Adjust extension as needed
+    const rightFileName = `${fileNumber+1}.webp`;
 
     alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
 
