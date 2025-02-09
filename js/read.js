@@ -90,14 +90,20 @@ $('.slider img').on('click', function() {
     handleImageSelection(selectedImageSrc); // Call the function to handle the selected image
 });
 
-// Function to handle the image selection
 function handleImageSelection(src) {
-    destroyQuill(position);
-    applyTemplate(src);
-
+    if (src.includes('text')) {
+        applyEditor(src);
+    } else {
+        destroyQuill(position);
+        applyTemplate(src);
+    }
+	
 }
+
+
 let quillLeft, quillRight;
 let editorContainer;
+let lastPosition = { left: 180, top: 158 };
 
 function initializeQuill(position, canvasWidth, canvasHeight) {
     const quillWidth = canvasWidth / 2;
@@ -107,66 +113,74 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
     Quill.register(Font, true);
 
     if (!editorContainer) {
-        editorContainer = document.createElement('div');
+         editorContainer = document.createElement('div');
         editorContainer.id = 'editorContainer';
+        editorContainer.style.position = 'absolute';
+        editorContainer.style.left = `${lastPosition.left}px`;
+        editorContainer.style.top = `${lastPosition.top}px`;
+        editorContainer.style.width = '400px';
+        editorContainer.style.height = '300px';
+        editorContainer.style.backgroundColor = 'transparent'; // Make container transparent
+        editorContainer.style.border = '1px solid #ccc'; // Add border for better visibility
+        editorContainer.style.zIndex = '1000';
+        editorContainer.style.resize = 'both'; // Make the container resizable
+        editorContainer.style.overflow = 'auto'; 
+
+        makeDraggable(editorContainer);
         document.body.appendChild(editorContainer);
     }
 
-    const quillDiv = document.createElement('div');
+     const quillDiv = document.createElement('div');
     quillDiv.id = position === 'left' ? 'quillLeft' : 'quillRight';
-    quillDiv.style.position = 'fixed'; // Changed to fixed
-    quillDiv.style.left = '350px'; // Adjust as necessary
-    quillDiv.style.top = '100px'; // Adjust as necessary
-    quillDiv.style.width = `${quillWidth}px`; // Adjust as necessary
-    quillDiv.style.height = `${quillHeight}px`; // Adjust as necessary
+    quillDiv.style.position = 'absolute';
+    quillDiv.style.left = '10px'; // Adjust as necessary
+    quillDiv.style.top = '10px'; // Adjust as necessary
+    quillDiv.style.width = `calc(100% - 20px)`; // Adjust as necessary
+    quillDiv.style.height = `calc(100% - 10px)`; // Adjust as necessary
+    quillDiv.style.zIndex = '1002'; // Ensure it's above other elements
     quillDiv.setAttribute('spellcheck', 'true');
     editorContainer.appendChild(quillDiv);
 
+    // Initialize Quill editor
     const quill = new Quill(`#${quillDiv.id}`, {
-        theme: 'bubble', // Changed to bubble theme
+        placeholder: 'Type your text here...',
+        theme: 'bubble',
         modules: {
             toolbar: [
                 ['bold', 'italic', 'underline'], // Basic styling
-                [{
-                    'list': 'ordered'
-                }, {
-                    'list': 'bullet'
-                }], // Lists
-                [{
-                    'align': []
-                }], // Alignment
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
+                [{ 'align': [] }], // Alignment
                 ['link', 'image'], // Links and images
-                [{
-                    'color': []
-                }, {
-                    'background': []
-                }] // Font color and background options
+                [{ 'color': [] }, { 'background': [] }] // Font color and background options
             ]
         }
     });
 
-    // Set default font color to black
-    quill.setContents([{
-        insert: ' ',
-        attributes: {
-            color: 'black'
+   quill.on('editor-change', () => {
+        const delta = quill.getContents();
+        if (delta.ops.length === 0 || delta.ops[0].insert === '\n') {
+            quill.format('color', 'black');
         }
-    }]);
-          quill.on('text-change', function(delta, oldDelta, source) {
- 
-    animateActiveLine(quill);
-  
-});
-    // Store reference to the quill instance
+    });
+    editorContainer.addEventListener('click', () => {
+        quill.focus();
+    });  
+    quill.on('text-change', function (delta, oldDelta, source) {
+		if (quill.getLength() === 1) { // Only newline exists
+        quill.root.dataset.placeholder = "Type your text here...";
+    }
+        animateActiveLine(quill);
+    });
+
+    // Store reference to the Quill instance
     if (position === 'left') {
         quillLeft = quill;
     } else {
         quillRight = quill;
     }
-        
+
+    // Initialize speech recognition if needed
     toggleSpeechRecognition(quill);
-
-
 }
 
 function removeQuill() {
@@ -223,15 +237,55 @@ function animateActiveLine(quill) {
     }
 }
 
+function createEditorOverlay(targetId, position, canvasWidth, canvasHeight) {
+    const targetElement = document.getElementById(targetId);
+    const rect = targetElement.getBoundingClientRect();
 
+    // Create the overlay div
+    const overlayDiv = document.createElement('div');
+    overlayDiv.style.position = 'absolute';
+    overlayDiv.style.left = `${rect.left}px`;
+    overlayDiv.style.top = `${rect.top}px`;
+    overlayDiv.style.width = `${canvasWidth}px`;
+    overlayDiv.style.height = `${canvasHeight}px`;
+    overlayDiv.style.zIndex = '10';
+    overlayDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'; // Semi-transparent background
+    overlayDiv.style.display = 'flex';
+    overlayDiv.style.justifyContent = 'center';
+    overlayDiv.style.alignItems = 'center';
+    overlayDiv.style.cursor = 'pointer';
+    overlayDiv.innerHTML = `<span style="font-size: 18px; color: #333;">Click to start writing</span>`;
+
+    // Append the overlay to the document body
+     document.body.appendChild(overlayDiv);
+
+    // Add a click event listener to initialize the editor
+    overlayDiv.addEventListener('click', () => {
+        // Remove the overlay
+        overlayDiv.remove();
+
+        // Initialize the Quill editor
+        initializeQuill(position, canvasWidth, canvasHeight);
+
+        // Enable or disable editors based on position
+        if (position === 'left') {
+            quillLeft.enable();
+            if (quillRight) quillRight.enable(false);
+        } else {
+            quillRight.enable();
+            if (quillLeft) quillLeft.enable(false);
+        }
+    });
+}
 // Add an event listener for text changes
+
 
 function applyTemplate(src) {
     const imgElement = document.getElementById("imgPageLeft");
     const imgPageElement = document.getElementById("imgPageRight");
-    const imgSrc = imgElement.src;
     const urlParams = new URLSearchParams(window.location.search);
     const fileNumber = parseInt(urlParams.get('page'));
+    
     if (isNaN(fileNumber)) {
         alert("Could not extract a valid file number from the URL.");
         return;
@@ -242,23 +296,21 @@ function applyTemplate(src) {
     if (fileNumber % 2 === 1) { // Odd number
         imgElement.src = src;
 
+        position = 'right';
         const canvasWidth = imgElement.width;
         const canvasHeight = imgElement.height;
-        position = 'right';
-        initializeQuill(position, canvasWidth, canvasHeight);
-        quillRight.enable(); // Enable editing for the right Quill editor
-        if (quillLeft) quillLeft.enable(false); // Disable editing for the left Quill editor if initialized
+
+        // Create inner HTML overlay for the right editor
+        createEditorOverlay('imgPageRight', position, canvasWidth, canvasHeight);
     } else { // Even number
         imgPageElement.src = src;
 
-        imgPageElement.onload = function() {
+        imgPageElement.onload = function () {
             const canvasWidth = imgPageElement.width;
             const canvasHeight = imgPageElement.height;
 
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d', {
-                willReadFrequently: true
-            });
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
             ctx.drawImage(imgPageElement, 0, 0);
@@ -267,14 +319,11 @@ function applyTemplate(src) {
             const rgbaColor = `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${imageData[3] / 255})`;
 
             const colorCanvas = document.createElement('canvas');
-            const colorCtx = colorCanvas.getContext('2d', {
-                willReadFrequently: true
-            });
+            const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
 
             // Set your original image dimensions
             colorCanvas.width = imgElement.width;
-            // Keep the canvas height fixed
-            colorCanvas.height = imgElement.height; // Fixed height
+            colorCanvas.height = imgElement.height;
 
             const marginSize = 40; // Adjust this value to change the thickness of the margins
             const decorationWidth = marginSize * 2; // Width for the decorations
@@ -287,22 +336,170 @@ function applyTemplate(src) {
             colorCtx.fillStyle = rgbaColor;
             colorCtx.fillRect(0, topPosition, colorCanvas.width, colorCanvas.height - marginSize * 2);
 
-            // Set the margin color to red and fill the top and bottom margins
-            colorCtx.fillStyle = getRandomColor(); // Solid red for margins
+            // Set the margin color to random
+            colorCtx.fillStyle = getRandomColor();
             colorCtx.fillRect(0, 0, colorCanvas.width, marginSize); // Top margin
             colorCtx.fillRect(0, bottomPosition, colorCanvas.width, marginSize); // Bottom margin
+            
             const jpegDataUrl = colorCanvas.toDataURL('image/webp');
             imgElement.src = jpegDataUrl;
+
             position = 'left';
-            initializeQuill(position, canvasWidth, canvasHeight);
-            'left'
-            quillLeft.enable(); // Enable editing for the left Quill editor
-            if (quillRight) quillRight.enable(false); // Disable editing for the right Quill editor if initialized
+
+            // Create inner HTML overlay for the left editor
+            //createEditorOverlay('imgPageLeft', position, canvasWidth, canvasHeight);
         };
     }
-	  sendUserIdToServer(fileNumber);
 }
 
+// Updated makeDraggable function
+function makeDraggable(element) {
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    element.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        const rect = element.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        element.style.cursor = "grabbing";
+		});
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            const newLeft = e.clientX - offsetX;
+            const newTop = e.clientY - offsetY;
+
+            element.style.left = `${newLeft}px`;
+            element.style.top = `${newTop}px`;
+            lastPosition = { left: newLeft, top: newTop };
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (isDragging) {
+            isDragging = false;
+            element.style.cursor = "move";
+            updateContent();
+        }
+    });
+}
+
+// Position update handler
+function updateContent() {
+    const container = document.getElementById('editorContainer');
+    if (container) {
+        container.style.left = `${lastPosition.left}px`;
+        container.style.top = `${lastPosition.top}px`;
+        console.log('Updated position:', lastPosition);
+    }
+}
+
+async function saveBook1() {
+    const imgEle = document.getElementById("imgPageLeft");
+    const targetWidth = imgEle.width;
+    const targetHeight = imgEle.height;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext("2d");
+
+    const background = new Image();
+    background.crossOrigin = "anonymous"; // Handle CORS if needed
+    background.src = imgEle.src;
+
+    // Wait for background image to load
+    await new Promise((resolve, reject) => {
+        background.onload = resolve;
+        background.onerror = reject;
+    });
+
+    // Draw background onto canvas
+    ctx.drawImage(background, 0, 0, targetWidth, targetHeight);
+
+    const editorContainer = document.getElementById('editorContainer');
+    if (!editorContainer) {
+        console.error("Editor container not found");
+        return;
+    }
+
+    // Ensure the container is visible and properly sized
+    editorContainer.style.display = 'block';
+    editorContainer.style.visibility = 'visible';
+    editorContainer.style.position = 'absolute'; // Must be absolute/fixed
+
+    // Set explicit dimensions if invalid
+    if (!editorContainer.offsetWidth || !editorContainer.offsetHeight) {
+        editorContainer.style.width = '400px'; // Match initializeQuill's default
+        editorContainer.style.height = '300px';
+        // Trigger reflow to apply styles
+        editorContainer.offsetHeight; // eslint-disable-line
+    }
+
+    // Clone the container to isolate it during rendering
+    const clone = editorContainer.cloneNode(true);
+    clone.style.opacity = '1';
+    document.body.appendChild(clone);
+
+    // Calculate position relative to the background image
+    const imgRect = imgEle.getBoundingClientRect();
+    const editorRect = editorContainer.getBoundingClientRect();
+
+    // Adjust for scroll and image position
+    const left = editorRect.left - imgRect.left;
+    const top = editorRect.top - imgRect.top;
+
+    try {
+        // Capture the cloned container with html2canvas
+        const quillCanvas = await html2canvas(clone, {
+            backgroundColor: null,
+            scale: 1, // Avoid scaling issues
+            useCORS: true,
+            logging: true,
+            allowTaint: true,
+            onclone: (clonedDoc) => {
+                // Ensure fonts/styles are inherited
+                clonedDoc.getElementById('editorContainer').style.fontFamily = 'inherit';
+            }
+        });
+
+        // Draw the captured content onto the main canvas
+        if (quillCanvas.width > 0 && quillCanvas.height > 0) {
+            ctx.drawImage(quillCanvas, left, top);
+        } else {
+            console.warn("Fallback rendering triggered");
+            renderQuillContentFallback(ctx, editorContainer, left, top);
+        }
+    } catch (error) {
+        console.error("html2canvas error:", error);
+    } finally {
+        // Clean up the cloned element
+        document.body.removeChild(clone);
+    }
+
+    // Export the final image
+    const finalImageDataUrl = canvas.toDataURL("image/webp");
+    const link = document.createElement("a");
+    link.href = finalImageDataUrl;
+    link.download = "editor_structure.webp";
+    link.click();
+}
+function inlineStyles(element) {
+    const computedStyle = window.getComputedStyle(element);
+    for (let property of computedStyle) {
+        element.style[property] = computedStyle.getPropertyValue(property);
+    }
+
+    Array.from(element.children).forEach(inlineStyles);
+}
+
+function renderQuillContentFallback(ctx, editorContainer, left, top) {
+    const quillContent = editorContainer.innerText || editorContainer.textContent;
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText(quillContent, left, top);
+}
 
 function getRandomColor() {
     const r = Math.floor(Math.random() * 256); // Random red value
@@ -444,7 +641,43 @@ function toggleSpeechRecognition(quill) {
     SpeechKITT.vroom();
 }
 
+function applyEditor(src) {
+    if (!src) return;
 
+    const imgEle = document.getElementById("imgPageLeft");
+    const targetWidth = imgEle.width;
+    const targetHeight = imgEle.height;
+
+    // Create a canvas for combining background and new image
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    // Draw the existing background onto the canvas
+    const background = new Image();
+    background.src = imgEle.src;
+
+    background.onload = function () {
+        ctx.drawImage(background, 0, 0, targetWidth, targetHeight);
+
+        // Load and draw the new image
+        const tempImage = new Image();
+        tempImage.onload = function () {
+            // Draw the new image on top of the background
+            ctx.drawImage(tempImage, 0, 0, targetWidth, targetHeight);
+
+            // Update the imgPageLeft source with the combined image
+            imgEle.src = canvas.toDataURL("image/webp"); // or "image/png" or "image/jpeg"
+        };
+
+        tempImage.src = src; // Load the new image source
+		createEditorOverlay('imgPageLeft', position, targetWidth, targetHeight)
+		
+		
+    };
+}
 
 
 function toggleHandlerElement(button, variableName, targets, className, refreshPages = false) {
