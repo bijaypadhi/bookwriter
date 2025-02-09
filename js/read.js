@@ -118,7 +118,7 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
         editorContainer.style.position = 'absolute';
         editorContainer.style.left = `${lastPosition.left}px`;
         editorContainer.style.top = `${lastPosition.top}px`;
-        editorContainer.style.width = '400px';
+        editorContainer.style.width = '300px';
         editorContainer.style.height = '300px';
         editorContainer.style.backgroundColor = 'transparent'; // Make container transparent
         editorContainer.style.border = '1px solid #ccc'; // Add border for better visibility
@@ -388,6 +388,7 @@ function makeDraggable(element) {
 // Position update handler
 function updateContent() {
     const container = document.getElementById('editorContainer');
+
     if (container) {
         container.style.left = `${lastPosition.left}px`;
         container.style.top = `${lastPosition.top}px`;
@@ -480,11 +481,10 @@ async function saveBook1() {
 
     // Export the final image
     const finalImageDataUrl = canvas.toDataURL("image/webp");
-    const link = document.createElement("a");
-    link.href = finalImageDataUrl;
-    link.download = "editor_structure.webp";
-    link.click();
+	
+   return finalImageDataUrl;
 }
+
 function inlineStyles(element) {
     const computedStyle = window.getComputedStyle(element);
     for (let property of computedStyle) {
@@ -508,86 +508,80 @@ function getRandomColor() {
     return `rgba(${r}, ${g}, ${b}, 1)`; // Return random color
 }
 
-function sendUserIdToServer(fileNumber) {
-    const imgLeftElement = document.getElementById("imgPageLeft");
+async function sendUserIdToServer(fileNumber) {
+   
     const imgRightElement = document.getElementById("imgPageRight");
 
     // Ensure image elements exist
-    if (!imgLeftElement || !imgRightElement) {
+    if (!imgRightElement) {
         alert('Missing images for saving the book.');
         return;
     }
 
-    // Get the image sources
-    const imgLeftSrc = imgLeftElement.src;
-    const imgRightSrc = imgRightElement.src;
+    try {
+        // Wait for the left image to be generated
+        const imgLeftSrc = await saveBook1();  // ✅ FIXED: Wait for the image URL
+        const imgRightSrc = imgRightElement.src;
+       
+        if (isNaN(fileNumber)) {
+            alert("Could not extract a valid file number from the URL.");
+            return;
+        }
 
-    // Validate fileNumber
-    if (isNaN(fileNumber)) {
-        alert("Could not extract a valid file number from the URL.");
-        return;
-    }
+        // Generate filenames
+        const leftFileName = `${fileNumber}.webp`;  
+        const rightFileName = `${fileNumber + 1}.webp`;
 
-    // Generate filenames
-    const leftFileName = `${fileNumber}.webp`;  // Adjust extension as needed
-    const rightFileName = `${fileNumber+1}.webp`;
+        alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
 
+        // Helper function to fetch image as Blob
+        const fetchImageAsBlob = async (src) => {
+            const response = await fetch(src);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch image: ${src}`);
+            }
+            return response.blob();
+        };
+          // Fetch blobs for both images
+        const [leftBlob, rightBlob] = await Promise.all([
+            fetchImageAsBlob(imgLeftSrc),
+            fetchImageAsBlob(imgRightSrc)
+        ]);
 
-    alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
-
-    // Helper function to fetch image as Blob
-    const fetchImageAsBlob = (src) => {
-        return fetch(src)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch image: ${src}`);
-                }
-                return response.blob();
-            });
-    };
-
-    // Fetch blobs for both images
-    Promise.all([
-        fetchImageAsBlob(imgLeftSrc),
-        fetchImageAsBlob(imgRightSrc)
-    ])
-    .then(([leftBlob, rightBlob]) => {
         // Prepare FormData
         const formData = new FormData();
         formData.append("userId", userId);  // Ensure `userId` is defined
-        formData.append("bookName", TITLE);  // Ensure `bookName` is defined
+        formData.append("bookName", TITLE);  // Ensure `TITLE` is defined
         formData.append("fileLeft", leftBlob, leftFileName);
         formData.append("fileRight", rightBlob, rightFileName);
 
         // Send the request to the server
-        return fetch('http://localhost:8080/api/minio/save-image', {
+        const response = await fetch('http://localhost:8080/api/minio/save-image', {
             method: 'POST',
             body: formData,
         });
-    })
-    .then(response => {
+
         console.log('Response Status:', response.status); // Log status
+
         const contentType = response.headers.get('content-type');
 
         if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Server error: ${text}`);
-            });
+            const text = await response.text();
+            throw new Error(`Server error: ${text}`);
         }
 
         // Parse response based on content type
-        return contentType && contentType.includes('application/json') 
-            ? response.json() 
-            : response.text();
-    })
-    .then(data => {
-        console.log(typeof data === 'string' 
-            ? `Server response (plain text): ${data}` 
+        const data = contentType && contentType.includes('application/json')
+            ? await response.json()
+            : await response.text();
+
+        console.log(typeof data === 'string'
+            ? `Server response (plain text): ${data}`
             : `Server response (JSON):`, data);
-    })
-    .catch(error => {
+
+    } catch (error) {
         console.error('Error:', error);
-    });
+    }
 }
 
 
@@ -955,15 +949,7 @@ function setHandlers() {
             }
         };
 
-        document.getElementById("nextPageButton").onclick = function() {
-        console.log("Next button clicked");
-        goNextPage();
-    };
-
-    document.getElementById("prevPageButton").onclick = function() {
-        console.log("Previous button clicked");
-        goPreviousPage();
-    };
+    
         pageSlider.oninput = function() {
 
             changePage(parseInt(pageSlider.value));
@@ -1358,8 +1344,35 @@ function populateBottomMenu(LIBRARY, TITLE, VOLUME, totalPages, TCONFIG) {
         navContainer.appendChild(divElement);
     }
 }
+window.onload = function () {
+    const nextButton = document.getElementById("nextPageButton");
+    if (!nextButton) {
+        console.error("nextPageButton not found in DOM.");
+        return;
+    }
 
+    nextButton.onclick = async function () {
+        console.log("Next button clicked");
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileNumber = parseInt(urlParams.get('page'));
+
+        if (isNaN(fileNumber)) {
+            alert("Invalid page number in URL.");
+            return;
+        }
+
+        await sendUserIdToServer(fileNumber);
+        goNextPage();
+    };
+};
+
+    document.getElementById("prevPageButton").onclick = function() {
+        console.log("Previous button clicked");
+		const urlParams = new URLSearchParams(window.location.search);
+        const fileNumber = parseInt(urlParams.get('page'));
+        goPreviousPage();
+    };
 function updateBookInfo() {
     // Replace with actual dynamic values for bookName and userID
     const bookName = TITLE;
@@ -1571,4 +1584,4 @@ fetchLanguages()
         });
       
     });
-populateBottomMenu(LIBRARY, TITLE, VOLUME, 25, TCONFIG);
+populateBottomMenu(LIBRARY, TITLE, VOLUME, 30, TCONFIG);

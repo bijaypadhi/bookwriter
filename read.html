@@ -19,6 +19,11 @@
     <link rel="stylesheet" type="text/css" href="./slick/slick-theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link type="text/css" rel="stylesheet" href="./css/quill.bubble.css" />
+	<style>
+   .ql-editor::before {
+    color: rgba(0, 0, 0, 0.6) !important; /* Adjust color if needed */
+    font-style: italic;
+	  </style>
 <script>
     var TogetherJSConfig = {
     // ENABLE CURSOR FEATURES
@@ -43,7 +48,7 @@
     }
 };
 </script>
- 
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="./js/togetherjs-min.js"></script>
     <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
 
@@ -84,10 +89,18 @@
                 <h3>Text</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
             </div>
-            <div class="inner-content">
-
-            </div>
-
+              <div draggable="true" class="inner-content" style="display: none;">
+			     <div id="selector">
+                    <section class="vertical-center-4 slider">
+                            <img src="./img/text_story.png" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                            <img src="./img/text_bamboo.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                            <img src="./img/text_oldscroll.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                            <img src="./img/text_speechbubble.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+							 <img src="./img/text_speechbubble-left.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+							  <img src="./img/star-text.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                    </section>
+                </div>
+             </div>
             <div class="accordion-title">
                 <img src="./img/icon/face-smile-solid.svg" />
                 <h3>Props</h3>
