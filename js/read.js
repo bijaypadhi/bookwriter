@@ -763,7 +763,7 @@ function changePage(newPage = null) {
         pageSlider.style.background = "linear-gradient(90deg, var(--menu-text-color) 0%, var(--menu-text-color) " + currentPosition.toString() + "%, gray " + currentPosition.toString() + "%, gray 100%)";
     }
 
-
+   steptip.startTutorial();
 }
 
 function addLoading() {
@@ -1406,6 +1406,11 @@ function updateBookInfo() {
         });
 }
 
+steptip.tooltip(document.getElementById("element1"),"First select the scenes for the story !",1,"light");
+
+steptip.tooltip(document.getElementById("element2"),"Select the text!",2,"light");
+
+steptip.tooltip(document.getElementById("bottomMenu"),"Page show",3,"light");
 
 function setBookTypeConfig() {
     BOOKTYPE = {
@@ -1501,49 +1506,67 @@ fetchLanguages()
 
     //---------------------------------------------------------------------------------
     //accordian open and close
-    document.addEventListener("DOMContentLoaded", () => {
-        // Select all accordion headers
-        const accordionHeaders = document.querySelectorAll("#accordion > div:not(.inner-content)");
-    
-        accordionHeaders.forEach(header => {
-            header.addEventListener("click", () => {
-                const panel = header.nextElementSibling;
-                const caretIcon = header.querySelector(".caret-icon");
-    
-                // Close all panels except the one being clicked
-                accordionHeaders.forEach(otherHeader => {
-                    const otherPanel = otherHeader.nextElementSibling;
-                    const otherCaretIcon = otherHeader.querySelector(".caret-icon");
-    
-                    if (otherPanel !== panel) {
-                        otherPanel.style.display = "none";
-                        if (otherCaretIcon) {
-                            otherCaretIcon.src = "./img/icon/caret-down-solid.svg"; // Update to caret-down icon
-                        }
+    //accordian open and close
+document.addEventListener("DOMContentLoaded", () => {
+    // Select all accordion headers
+    const accordionHeaders = document.querySelectorAll("#accordion > div:not(.inner-content)");
+
+    accordionHeaders.forEach(header => {
+        header.addEventListener("click", () => {
+            const panel = header.nextElementSibling;
+            const caretIcon = header.querySelector(".caret-icon");
+
+            // Close all panels except the one being clicked
+            accordionHeaders.forEach(otherHeader => {
+                const otherPanel = otherHeader.nextElementSibling;
+                const otherCaretIcon = otherHeader.querySelector(".caret-icon");
+
+                if (otherPanel !== panel) {
+                    otherPanel.style.display = "none";
+                    if (otherCaretIcon) {
+                        otherCaretIcon.src = "./img/icon/caret-down-solid.svg"; // Update to caret-down icon
                     }
-                });
-    
-                // Toggle the clicked panel
-                const isOpen = panel.style.display === "block";
-                panel.style.display = isOpen ? "none" : "block";
-    
-                // Update the caret icon for the clicked panel
-                if (caretIcon) {
-                    caretIcon.src = isOpen
-                        ? "./img/icon/caret-down-solid.svg"
-                        : "./img/icon/caret-up-solid.svg";
                 }
             });
-        });
-    
-        // Drag-and-drop functionality
-        const stickers = document.querySelectorAll(".sticker img");
-        stickers.forEach(sticker => {
-            sticker.addEventListener("dragstart", event => {
-                event.dataTransfer.setData("text/plain", event.target.src);
-            });
+
+            // Toggle the clicked panel
+            const isOpen = panel.style.display === "block";
+            panel.style.display = isOpen ? "none" : "block";
+
+            // Update the caret icon for the clicked panel
+            if (caretIcon) {
+                caretIcon.src = isOpen
+                    ? "./img/icon/caret-down-solid.svg"
+                    : "./img/icon/caret-up-solid.svg";
+            }
         });
     });
+
+    // Drag-and-drop functionality
+    const stickers = document.querySelectorAll(".sticker img");
+    stickers.forEach(sticker => {
+        sticker.addEventListener("dragstart", event => {
+            event.dataTransfer.setData("text/plain", event.target.src);
+        });
+    });
+
+    // Start tutorial (Ensure steptip is defined before calling it)
+    if (typeof steptip !== "undefined" && steptip.startTutorial) {
+        steptip.startTutorial();
+    } else {
+        console.warn("steptip is not defined or startTutorial() is missing.");
+    }
+
+    // Tooltip initialization with animation
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            animation: true, // Enables Bootstrap's built-in animation
+            delay: { show: 300, hide: 100 } // Adds a delay for a smooth effect
+        });
+    });
+});
+
 
     //--------------------------------------------------------------------
     $(document).on('ready', function () {
