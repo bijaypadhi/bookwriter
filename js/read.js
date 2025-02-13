@@ -106,21 +106,25 @@ let editorContainer;
 let lastPosition = { left: 160, top: 158 };
 
 function initializeQuill(position, canvasWidth, canvasHeight) {
-	const imgPageLeft = document.getElementById("imgPageLeft");
+    const imgPageLeft = document.getElementById("imgPageLeft");
     const imgPageLeftRect = imgPageLeft.getBoundingClientRect();
-
+    let isContentLimited = false;
+    const maxHeight = 278;
+    
     lastPosition = {
-    left: 415, // Use the left position of imgPageLeft
-    top: 119    // Use the top position of imgPageLeft
-      };
+        left: 415, // Use the left position of imgPageLeft
+        top: 119    // Use the top position of imgPageLeft
+    };
+    
     const quillWidth = canvasWidth / 2;
     const quillHeight = canvasHeight / 2;
+    
     const Font = Quill.import('formats/font');
     Font.whitelist = ['mirza', 'roboto'];
     Quill.register(Font, true);
 
     if (!editorContainer) {
-         editorContainer = document.createElement('div');
+        editorContainer = document.createElement('div');
         editorContainer.id = 'editorContainer';
         editorContainer.style.position = 'absolute';
         editorContainer.style.left = `${lastPosition.left}px`;
@@ -131,59 +135,82 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
         editorContainer.style.border = '1px solid #ccc'; // Add border for better visibility
         editorContainer.style.zIndex = '1000';
         editorContainer.style.resize = 'both'; // Make the container resizable
-        editorContainer.style.overflow = 'visible'; 
-     
+        editorContainer.style.overflow = 'visible'; // Prevent excessive content overflow
+
         makeDraggable(editorContainer);
         document.body.appendChild(editorContainer);
     }
 
-     const quillDiv = document.createElement('div');
+    const quillDiv = document.createElement('div');
     quillDiv.id = position === 'left' ? 'quillLeft' : 'quillRight';
     quillDiv.style.position = 'absolute';
-    quillDiv.style.left = '10px'; // Adjust as necessary
-    quillDiv.style.top = '10px'; // Adjust as necessary
-    quillDiv.style.width = `calc(100% - 20px)`; // Adjust as necessary
-    quillDiv.style.height = `calc(100% - 10px)`; // Adjust as necessary
-    quillDiv.style.zIndex = '1002'; // Ensure it's above other elements
-	quillDiv.style.overflow = 'visible';
-	
+    quillDiv.style.left = '10px'; 
+    quillDiv.style.top = '10px';
+    quillDiv.style.width = `calc(100% - 20px)`;
+    quillDiv.style.height = `calc(100% - 20px)`;
+    quillDiv.style.zIndex = '1002';
+    quillDiv.style.overflow = 'visible'; // Prevent scrollbars
+
     quillDiv.setAttribute('spellcheck', 'true');
     editorContainer.appendChild(quillDiv);
 
     // Initialize Quill editor
-  const quill = new Quill(`#${quillDiv.id}`, {
-    placeholder: 'Type your text here...',
-    theme: 'bubble',
-    modules: {
-        toolbar: [
-            ['bold', 'italic', 'underline'], // Basic styling
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
-            [{ 'align': [] }], // Alignment
-            ['link', 'image'], // Links and images
-            [{ 'color': [] }, { 'background': [] }] // Font color and background options
-        ], // ❌ Missing comma was here
-
-        imageResize: { // ✅ Correct placement
-            modules: ['Resize', 'DisplaySize', 'Toolbar']
+    const quill = new Quill(`#${quillDiv.id}`, {
+        placeholder: 'Type your text here...',
+        theme: 'bubble',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link', 'image'],
+                [{ 'color': [] }, { 'background': [] }]
+            ],
+            imageResize: {
+                modules: ['Resize', 'DisplaySize', 'Toolbar']
+            }
         }
-    }
-});
+    });
+   
+const quillEditor = editorContainer.querySelector('.ql-editor');
+quillEditor.style.overflowY = 'hidden';
 
-
-   quill.on('editor-change', () => {
+    quill.on('editor-change', () => {
         const delta = quill.getContents();
         if (delta.ops.length === 0 || delta.ops[0].insert === '\n') {
             quill.format('color', 'black');
         }
     });
+
     editorContainer.addEventListener('click', () => {
         quill.focus();
-    });  
+    });
+
     quill.on('text-change', function (delta, oldDelta, source) {
-		if (quill.getLength() === 1) { // Only newline exists
-        quill.root.dataset.placeholder = "Type your text here...";
-    }
+        if (quill.getLength() === 1) { // Only newline exists
+            quill.root.dataset.placeholder = "Type your text here...";
+        }
+
         animateActiveLine(quill);
+
+        // Get the actual content height
+        const editorContent = quill.root;
+        if (editorContent.scrollHeight > maxHeight) {
+            quill.disable(); // Disable editing when content exceeds max height
+
+            if (!isContentLimited) {
+                editorContent.style.boxShadow = '0 0 8px rgba(255,0,0,0.3)';
+                setTimeout(() => {
+                    editorContent.style.boxShadow = '';
+                }, 1000);
+                isContentLimited = true;
+            }
+        } else {
+            if (isContentLimited) {
+                quill.enable(); // Re-enable if within limit
+                isContentLimited = false;
+            }
+        }
     });
 
     // Store reference to the Quill instance
