@@ -103,9 +103,16 @@ function handleImageSelection(src) {
 
 let quillLeft, quillRight;
 let editorContainer;
-let lastPosition = { left: 180, top: 158 };
+let lastPosition = { left: 160, top: 158 };
 
 function initializeQuill(position, canvasWidth, canvasHeight) {
+	const imgPageLeft = document.getElementById("imgPageLeft");
+    const imgPageLeftRect = imgPageLeft.getBoundingClientRect();
+
+    lastPosition = {
+    left: 415, // Use the left position of imgPageLeft
+    top: 119    // Use the top position of imgPageLeft
+      };
     const quillWidth = canvasWidth / 2;
     const quillHeight = canvasHeight / 2;
     const Font = Quill.import('formats/font');
@@ -124,8 +131,8 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
         editorContainer.style.border = '1px solid #ccc'; // Add border for better visibility
         editorContainer.style.zIndex = '1000';
         editorContainer.style.resize = 'both'; // Make the container resizable
-        editorContainer.style.overflow = 'auto'; 
-
+        editorContainer.style.overflow = 'visible'; 
+     
         makeDraggable(editorContainer);
         document.body.appendChild(editorContainer);
     }
@@ -138,23 +145,30 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
     quillDiv.style.width = `calc(100% - 20px)`; // Adjust as necessary
     quillDiv.style.height = `calc(100% - 10px)`; // Adjust as necessary
     quillDiv.style.zIndex = '1002'; // Ensure it's above other elements
+	quillDiv.style.overflow = 'visible';
+	
     quillDiv.setAttribute('spellcheck', 'true');
     editorContainer.appendChild(quillDiv);
 
     // Initialize Quill editor
-    const quill = new Quill(`#${quillDiv.id}`, {
-        placeholder: 'Type your text here...',
-        theme: 'bubble',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline'], // Basic styling
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
-                [{ 'align': [] }], // Alignment
-                ['link', 'image'], // Links and images
-                [{ 'color': [] }, { 'background': [] }] // Font color and background options
-            ]
+  const quill = new Quill(`#${quillDiv.id}`, {
+    placeholder: 'Type your text here...',
+    theme: 'bubble',
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline'], // Basic styling
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
+            [{ 'align': [] }], // Alignment
+            ['link', 'image'], // Links and images
+            [{ 'color': [] }, { 'background': [] }] // Font color and background options
+        ], // ❌ Missing comma was here
+
+        imageResize: { // ✅ Correct placement
+            modules: ['Resize', 'DisplaySize', 'Toolbar']
         }
-    });
+    }
+});
+
 
    quill.on('editor-change', () => {
         const delta = quill.getContents();
@@ -217,24 +231,35 @@ function destroyQuill(position) {
 let previousLine = null;
 
 function animateActiveLine(quill) {
-    const range = quill.getSelection();
+   quill.on("selection-change", function (range) {
     if (range) {
-        const [line, offset] = quill.getLine(range.index);
+        document.querySelectorAll(".ql-editor p, .ql-editor div").forEach((el) => {
+            el.classList.remove("active-line");
+        });
 
-        // Check if we're on a new line
-        if (line !== previousLine) {
-            // Clear animation from the previous line
-            if (previousLine) {
-                previousLine.domNode.classList.remove('line-highlight');
-            }
+        let [block] = quill.getLeaf(range.index);
+        if (block) {
+            let line = block.domNode.parentNode;
+            line.classList.add("active-line");
 
-            // Apply animation to the current line
-            line.domNode.classList.add('line-highlight');
-
-            // Update the previous line to the current one
-            previousLine = line;
+            // Remove effect after 1 second
+            setTimeout(() => {
+                line.classList.remove("active-line");
+            }, 1000);
         }
     }
+});
+
+// CSS Animation
+const style = document.createElement("style");
+style.innerHTML = `
+    .active-line {
+        transition: background 0.5s ease-in-out;
+        background: rgba(255, 215, 0, 0.2);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+`;
+document.head.appendChild(style);
 }
 
 function createEditorOverlay(targetId, position, canvasWidth, canvasHeight) {
@@ -291,17 +316,14 @@ function applyTemplate(src) {
         return;
     }
 
-    alert(fileNumber); // Should alert 28
+  
 
-    if (fileNumber % 2 === 1) { // Odd number
+    if (fileNumber % 2 === 1) { // even number
         imgElement.src = src;
 
         position = 'right';
-        const canvasWidth = imgElement.width;
-        const canvasHeight = imgElement.height;
-
-        // Create inner HTML overlay for the right editor
-        createEditorOverlay('imgPageRight', position, canvasWidth, canvasHeight);
+      
+      
     } else { // Even number
         imgPageElement.src = src;
 
@@ -346,32 +368,58 @@ function applyTemplate(src) {
 
             position = 'left';
 
-            // Create inner HTML overlay for the left editor
-            //createEditorOverlay('imgPageLeft', position, canvasWidth, canvasHeight);
+            
         };
     }
+	populateBottomMenu(LIBRARY, TITLE, VOLUME, 30, TCONFIG);
 }
 
-// Updated makeDraggable function
 function makeDraggable(element) {
     let isDragging = false;
     let offsetX, offsetY;
 
     element.addEventListener("mousedown", (e) => {
+        // Check if the event target is an image resize handle or its parent
+        const isResizeHandle = e.target.closest('.ql-image-resize-handle, .ql-image-resize');
+        if (isResizeHandle) {
+            return; // Ignore the event if it's from the image resize handle
+        }
+
         isDragging = true;
         const rect = element.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
         element.style.cursor = "grabbing";
-		});
+    });
 
     document.addEventListener("mousemove", (e) => {
         if (isDragging) {
-            const newLeft = e.clientX - offsetX;
-            const newTop = e.clientY - offsetY;
+            const imgPageLeft = document.getElementById("imgPageLeft");
+            const imgPageLeftRect = imgPageLeft.getBoundingClientRect();
 
+            // Calculate new position
+            let newLeft = e.clientX - offsetX;
+            let newTop = e.clientY - offsetY;
+
+            // Get element dimensions
+            const elementWidth = element.offsetWidth;
+            const elementHeight = element.offsetHeight;
+
+            // Calculate boundaries
+            const minLeft = imgPageLeftRect.left;
+            const maxLeft = imgPageLeftRect.right - elementWidth;
+            const minTop = imgPageLeftRect.top;
+            const maxTop = imgPageLeftRect.bottom - elementHeight;
+
+            // Clamp values to stay within imgPageLeft
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+            newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+            // Apply constrained position
             element.style.left = `${newLeft}px`;
             element.style.top = `${newTop}px`;
+
+            // Update lastPosition
             lastPosition = { left: newLeft, top: newTop };
         }
     });
@@ -380,10 +428,19 @@ function makeDraggable(element) {
         if (isDragging) {
             isDragging = false;
             element.style.cursor = "move";
+
+            // Ensure the element stays in its final position
+            element.style.left = `${lastPosition.left}px`;
+            element.style.top = `${lastPosition.top}px`;
+
+            // Call updateContent to sync the position
             updateContent();
         }
     });
+	
+	
 }
+
 
 // Position update handler
 function updateContent() {
@@ -1155,17 +1212,6 @@ function applyLanguage() {
     }
     themeSelection.selectedIndex = currentThemeSelection;
 
-    /* Populate the chapterSelection menu with the chapter from this title */
-    // const currentChapterSelection = chapterSelection.selectedIndex;
-    //chapterSelection.innerHTML = "";
-    // for (let i = 0; i < getChapterCount(); i++) {
-    // const option = document.createElement("option");
-    // option.text = LCONFIG.readPage.chapter + " " + (i + 1).toString();
-    // chapterSelection.add(option);
-    //}
-    //chapterSelection.selectedIndex = currentChapterSelection;
-
-    // Refresh the book info at the top
     bookVolume.innerHTML = LCONFIG.titlePage.volume + " " + VOLUME;
 }
 
@@ -1565,6 +1611,7 @@ document.addEventListener("DOMContentLoaded", () => {
             delay: { show: 300, hide: 100 } // Adds a delay for a smooth effect
         });
     });
+	
 });
 
 
