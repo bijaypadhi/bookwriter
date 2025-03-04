@@ -22,16 +22,26 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="//cdn.quilljs.com/1.2.2/quill.min.js"></script>
     <link href="//cdn.quilljs.com/1.2.2/quill.bubble.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/notiflix-3.2.8.min.css" />
 
+    <script src="./js/notiflix-3.2.8.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="./js/togetherjs-min.js"></script>
     <script src="./slick/slick.js" type="text/javascript" charset="utf-8"></script>
-     
-    <script src="./js/steptip.js" type="text/javascript" charset="utf-8"></script>
+     <script src="./js/steptip.js" type="text/javascript" charset="utf-8"></script>
+  
      <!-- jQuery -->
 	   <script src="./js/jquery-2.2.0.min.js" type="text/javascript"></script>
     <script src="./js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
-
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.css">
+     <script src="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.js"></script>
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+	 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 </head>
 <style>
 
@@ -40,6 +50,34 @@
     padding: 10px !important;
     line-height: 1.5 !important;
 }
+.share-slider {
+    position: fixed;
+    right: -300px;  /* Move it off-screen on the right */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    background: rgba(0, 0, 0, 0.95);
+    border-radius: 15px 0 0 15px; /* Adjust border for right-side */
+    padding: 20px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2); /* Shadow on the left */
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.share-slider.active {
+    right: 0;  /* Move it into view */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .share-slider {
+        width: 250px;
+        right: -250px;
+    }
+
+}
+
+
 </style>
 <body>
 
@@ -62,27 +100,52 @@
    
     <div class="curvy-panel">
         <div id="accordion">
+		 <!-- Spotlight;Hello Visitor; please select the scene. -->
+		     <div class="accordion-title"  id="element1">
+                <img src="./img/icon/image-solid.svg" />
+                <h3>Scenes</h3>
+                <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
+				
+            </div>
+            <div draggable="true" class="inner-content" style="display: none;">
+                <div id="selector">
+                    <section class="vertical-center-4 slider">
+                        <img src="./img/thriller/1.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/thriller/2.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/thriller/3.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                        <img src="./img/thriller/4.webp" style="width: 100%; height: 150px; object-fit: fill;">
+						 <img src="./img/thriller/5.webp" style="width: 100%; height: 150px; object-fit: fill;">
+						  <img src="./img/thriller/6.webp" style="width: 100%; height: 150px; object-fit: fill;">
+						   <img src="./img/thriller/7.webp" style="width: 100%; height: 150px; object-fit: fill;">
+						    <img src="./img/thriller/8.webp" style="width: 100%; height: 150px; object-fit: fill;">
+                    </section>
+                </div>
+            </div>
+		 <!-- Spotlight;Hello Visitor; please select the text Next. -->
             <div class="accordion-title" id="element2">
                 <img src="./img/icon/keyboard-solid.svg" />
                 <h3>Text</h3>
-                <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
+                <img src="./img/icon/caret-down-solid.svg" class="caret-icon"/>
+				
             </div>
               <div draggable="true" class="inner-content" style="display: none;">
 			     <div id="selector">
                     <section class="vertical-center-4 slider">
-                            <img src="./img/text_story.png"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                            <img src="./img/text_story.jpg"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
                             <img src="./img/text_bamboo.webp"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
                             <img src="./img/text_oldscroll.webp"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
-                            <img src="./img/text_speechbubble.webp"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
+                            <img src="./img/text_funny.jpg"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
 							 <img src="./img/text_speechbubble-left.webp"  style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
 							  <img src="./img/star-text.webp" style="width: 100%; height: 150px; object-fit: fill;" draggable="true">
                     </section>
                 </div>
              </div>
-            <div class="accordion-title" id="element3">
+			 <!-- Spotlight;Hello Visitor; please Drag Prop. -->
+            <div class="accordion-title">
                 <img src="./img/icon/face-smile-solid.svg" />
                 <h3>Props</h3>
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
+				
             </div>
             <div draggable="true" class="inner-content" style="display: none;">
                 <div id="selector">
@@ -104,29 +167,16 @@
                     </section>
                 </div>
             </div>
+           
+           <!-- Spotlight;Hello Visitor; Read The Help. -->
 
-            <div class="accordion-title"  id="element1">
-                <img src="./img/icon/image-solid.svg" />
-                <h3>Scenes</h3>
-                <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
-            </div>
-            <div draggable="true" class="inner-content" style="display: none;">
-                <div id="selector">
-                    <section class="vertical-center-4 slider">
-                        <img src="./img/book2.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                        <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                        <img src="./img/book3.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                        <img src="./img/book1.webp" style="width: 100%; height: 150px; object-fit: fill;">
-                    </section>
-                </div>
-            </div>
-
-            <div class="accordion-title">
+            <div class="accordion-title" id="element4">
                 <img src="./img/icon/circle-info-solid.svg" />
 				
                 <h3>Help Tips</h3>
 				
                 <img src="./img/icon/caret-down-solid.svg" class="caret-icon" />
+				
             </div>
             <div class="inner-content">
                 <p>This is where you can provide help tips or guidance for this page.</p>
@@ -136,16 +186,23 @@
             </div>
         </div>
     </div>
+        <div class="curvy-button-panel" >
+     
+       <div id="shareButton" onclick="toggleShareSlider(event)" 
+         data-bs-toggle="tooltip" data-bs-placement="left" 
+         title="Share with friends" class="share-trigger">
+        <img src="./img/icon/share-solid.svg" alt="Share"/>
+        <h3>Share Book</h3>    
+        <img src="./img/icon/finger-pointing.png" alt="Pointer" class="hand-icon"/>
+    </div>
 
-    <div class="curvy-button-panel" >
-        <div data-bs-toggle="tooltip" data-bs-placement="left" title="Share with friends">
-            <img src="./img/icon/share-solid.svg" />
-            <h3>Share Book</h3>
-			<img src="./img/icon/finger-pointing.png" 
-         alt="Hand Pointer" 
-         class="hand-icon">
+	  <div id="shareSlider" class="share-slider">
+        <div class="ss-box ss-pill" 
+             data-ss-content="false" 
+             data-ss-social="facebook, pinterest, whatsapp, email, twitter, share">
         </div>
-       <div>
+    </div>
+ <div>
   <button id="saveButton" style="border: none; background: none; cursor: pointer; padding: 0;"  data-bs-toggle="tooltip" data-bs-placement="left" title="Save & Exit">
   <img src="./img/icon/floppy-disk-solid.svg" alt="Save & Exit" style="width: 24px; height: 24px;" />
 </button>
@@ -171,7 +228,6 @@
 </div>
 
     </div>
-
 
     <div id="navImageContainer" class="zoom">
         <div id="navImage">
@@ -257,11 +313,20 @@
     
     <div id="eyeFilter"></div>
     <div id="book-pages-carousel" class="slick-carousel"></div>
+	
 </body>
 <script src="./js/annyang.js"></script>
 <script type="module" src="./js/read.js"></script>
 <script src="./js/speechkiit.js"></script>
-<script src="./js/save.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./js/image-resize.min.js"></script>
+<script src="https://assisfery.github.io/SocialShareJS/socialshare.min.js"></script>
+ 
+ <script>
+function toggleShareSlider(event) {
+     document.getElementById("shareSlider").classList.toggle("active");
+}
+</script>
+
 </html>

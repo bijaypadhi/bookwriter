@@ -23,24 +23,31 @@ import {
     getPosCookie,
     setPosCookie
 } from './cookie.js';
-let textArea = null;
+
+
 let canvas, colorCanvas;
-let jpegDataUrl = null;
-let colorCtx = null;
-let textAreaObject = null;
 let position = null;
 
-function getImage(url) {
+function getImage(url, retries = 3, delay = 500) {
     return new Promise(function(resolve, reject) {
         const img = new Image();
+        const cacheBuster = `?nocache=${Date.now()}-${Math.random()}`;
+        img.src = url + cacheBuster; // Ensure fresh load
+
         img.onload = function() {
-            resolve(url);
-        }
+            resolve(img.src);
+        };
+
         img.onerror = function() {
-            reject(url);
-        }
-        img.src = url;
-    })
+            if (retries > 0) {
+                setTimeout(() => {
+                    getImage(url, retries - 1, delay).then(resolve).catch(reject);
+                }, delay);
+            } else {
+                reject(new Error(`Failed to load image: ${url}`));
+            }
+        };
+    });
 }
 
 if (!userId) {
@@ -112,8 +119,8 @@ function initializeQuill(position, canvasWidth, canvasHeight) {
     const maxHeight = 278;
     
     lastPosition = {
-        left: 415, // Use the left position of imgPageLeft
-        top: 119    // Use the top position of imgPageLeft
+        left: 336, // Use the left position of imgPageLeft
+        top: 90    // Use the top position of imgPageLeft
     };
     
     const quillWidth = canvasWidth / 2;
@@ -352,9 +359,7 @@ function applyTemplate(src) {
       
       
     } else { // Even number
-        imgPageElement.src = src;
-
-        imgPageElement.onload = function () {
+            imgPageElement.src = src;
             const canvasWidth = imgPageElement.width;
             const canvasHeight = imgPageElement.height;
 
@@ -395,8 +400,6 @@ function applyTemplate(src) {
 
             position = 'left';
 
-            
-        };
     }
 	populateBottomMenu(LIBRARY, TITLE, VOLUME, 30, TCONFIG);
 }
@@ -566,6 +569,7 @@ async function saveBook1() {
     // Export the final image
     const finalImageDataUrl = canvas.toDataURL("image/webp");
 	
+	
    return finalImageDataUrl;
 }
 
@@ -594,6 +598,8 @@ function getRandomColor() {
 
 async function sendUserIdToServer(fileNumber) {
    
+   
+    Notiflix.Notify.warning('Your content will be saved and cannot be edited again')
     const imgRightElement = document.getElementById("imgPageRight");
 
     // Ensure image elements exist
@@ -640,10 +646,10 @@ async function sendUserIdToServer(fileNumber) {
         formData.append("fileRight", rightBlob, rightFileName);
 
         // Send the request to the server
-        const response = await fetch('http://localhost:8080/api/minio/save-image', {
-            method: 'POST',
-            body: formData,
-        });
+       const response = await fetch(`${await getApiBaseURL()}/minio/save-image`, {
+       method: 'POST',
+       body: formData,
+       });
 
         console.log('Response Status:', response.status); // Log status
 
@@ -653,17 +659,15 @@ async function sendUserIdToServer(fileNumber) {
             const text = await response.text();
             throw new Error(`Server error: ${text}`);
         }
-
-        // Parse response based on content type
-        const data = contentType && contentType.includes('application/json')
-            ? await response.json()
-            : await response.text();
-
-        console.log(typeof data === 'string'
-            ? `Server response (plain text): ${data}`
-            : `Server response (JSON):`, data);
-
-    } catch (error) {
+		else {
+			
+			Notiflix.Notify.success('Your Work Is saved automatically')
+       
+    }
+		 
+    }
+	
+	catch (error) {
         console.error('Error:', error);
     }
 }
@@ -672,7 +676,8 @@ async function sendUserIdToServer(fileNumber) {
 
 function toggleSpeechRecognition(quill) {
     if (!annyang) {
-        alert("Speech Recognition is not supported in this browser.");
+        
+		Notiflix.Notify.failure('Speech Recognition is not supported in this browser.');
         return;
     }
 
@@ -800,16 +805,13 @@ function changePage(newPage = null) {
 
         // const paramChapter = parseInt(findGetParameter('chapter'));
         const paramPage = parseInt(findGetParameter('page'));
-        const pos = getPosCookie(TITLE);
-
+      
         // If a page is indicated in the GET
         if (!Number.isNaN(paramPage)) {
             newPage = paramPage;
             // If a chapter is indicated in the GET
-        } else if (pos != undefined && pos[VOLUME] != undefined) {
-            newPage = pos[VOLUME];
-            // Else open the first page
-        } else {
+        } 
+		else {
             newPage = 1;
         }
 
@@ -847,8 +849,7 @@ function changePage(newPage = null) {
         pageSlider.style.background = "linear-gradient(90deg, var(--menu-text-color) 0%, var(--menu-text-color) " + currentPosition.toString() + "%, gray " + currentPosition.toString() + "%, gray 100%)";
     }
 
-   steptip.startTutorial();
-}
+ }
 
 function addLoading() {
     ELEM_LOADING++;
@@ -937,15 +938,15 @@ function refreshDisplayPages() {
             imgPageRight.style.display = "none";
             navImage.classList.remove("doublePage");
         }
-
+               const cacheBuster = new Date().getTime() + Math.random();
         /* Load the current page*/
         {
 
-             const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE, TCONFIG.fileExtension) + "?t=" + new Date().getTime();
-
+             const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE, TCONFIG.fileExtension) + "?t=" + cacheBuster;
+                 
             if (UCONFIG.doublePage) {
 
-                const rightPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE + 1, TCONFIG.fileExtension) + "?t=" + new Date().getTime();
+                const rightPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, PAGE + 1, TCONFIG.fileExtension) + "?t=" + cacheBuster;;
 
                 addLoading();
                 getImage(rightPageURL).then(function(successUrl) {
@@ -1372,7 +1373,7 @@ function saveBook() {
             formData.append("fileRight", rightBlob, rightFileName);
 
             // API call
-            return fetch('http://localhost:8080/api/book-infos', {
+            return fetch(`${getApiBaseURL()}/book-infos`, {
                 method: 'POST',
                 body: formData,
             });
@@ -1385,22 +1386,34 @@ function saveBook() {
         })
         .then(data => {
             console.log('Book saved successfully:', data);
-            alert('Book saved successfully!');
+			Notiflix.Notify.success('Book saved successfully!');
+           
             // Redirect to the book writer page after saving the book
-            window.location.href = 'http://localhost:8000/bookwriter/';
+            window.location.href = `${getBaseURL()}/bookwriter/`;
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error saving the book: ' + error.message);
+			Notiflix.Notify.failure('Error saving the book:');
+           
         });
 }
+
+
+function getBaseURL() {
+    return typeof window !== 'undefined' && window.location && window.location.origin 
+        ? window.location.origin           // e.g., http://localhost:8080
+        : 'http://localhost:8000';         // Fallback aligns with your Nginx port
+}
+
+
 function populateBottomMenu(LIBRARY, TITLE, VOLUME, totalPages, TCONFIG) {
     const navContainer = document.querySelector("#bottomMenu .navContainer");
     navContainer.innerHTML = ""; // Clear existing content
 
     for (let page = 1; page <= totalPages; page++) {
-        const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, page, ".webp");
-        
+        const cacheBuster = new Date().getTime(); // Generates a timestamp as a cache buster
+        const leftPageURL = infoToImageURL(LIBRARY, TITLE, VOLUME, page, ".webp") + "?t=" + cacheBuster;
+
         const imgElement = document.createElement("img");
         imgElement.src = leftPageURL;
         imgElement.dataset.pageNumber = page; // Store the page number in a data attribute
@@ -1436,16 +1449,32 @@ window.onload = function () {
         }
 
         await sendUserIdToServer(fileNumber);
+		destroyQuill(position);
         goNextPage();
+    };
+	
+	const prevButton = document.getElementById("prevPageButton");
+	
+	 if (!prevButton) {
+        console.error("prevButton not found in DOM.");
+        return;
+    }
+
+    prevButton.onclick = async function () {
+        console.log("prevButton button clicked");
+        destroyQuill(position);
+        goPreviousPage();
     };
 };
 
-    document.getElementById("prevPageButton").onclick = function() {
-        console.log("Previous button clicked");
-		const urlParams = new URLSearchParams(window.location.search);
-        const fileNumber = parseInt(urlParams.get('page'));
-        goPreviousPage();
-    };
+function getApiBaseURL() {
+    // Use window.location.origin as the base, assuming the API is on the same origin as the frontend
+    // Fallback to a default for local dev or testing
+    return typeof window !== 'undefined' && window.location && window.location.origin 
+        ? `${window.location.origin}/api`  // e.g., http://localhost:8080/api, http://148.100.78.182:8080/api
+        : 'http://localhost:8080/api';     // Fallback for local dev
+}
+ 
 function updateBookInfo() {
     // Replace with actual dynamic values for bookName and userID
     const bookName = TITLE;
@@ -1456,7 +1485,7 @@ function updateBookInfo() {
     alert(`User ID: ${userId}, Book Name: ${bookName}`);
 
     // Construct the URL with query parameters
-    const url = `http://localhost:8080/api/book-infos/1`;
+    const url = `${getApiBaseURL()}/book-infos/1`;
 
     // Make the PUT request
     fetch(url, {
@@ -1471,19 +1500,20 @@ function updateBookInfo() {
         })
         .then(data => {
             console.log('Book updated successfully:', data);
-            alert('Book updated successfully!');
+			Notiflix.Notify.success('Book updated successfully!');
+           
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error updating the book');
+			Notiflix.Notify.failure('Error updating the book');
+
+            
         });
 }
 
-steptip.tooltip(document.getElementById("element1"),"First select the scenes for the story !",1,"light");
+ 
 
-steptip.tooltip(document.getElementById("element2"),"Select the text!",2,"light");
 
-steptip.tooltip(document.getElementById("bottomMenu"),"Page show",3,"light");
 
 function setBookTypeConfig() {
     BOOKTYPE = {
@@ -1624,11 +1654,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Start tutorial (Ensure steptip is defined before calling it)
-    if (typeof steptip !== "undefined" && steptip.startTutorial) {
-        steptip.startTutorial();
-    } else {
-        console.warn("steptip is not defined or startTutorial() is missing.");
-    }
+  
 
     // Tooltip initialization with animation
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -1682,3 +1708,6 @@ document.addEventListener("DOMContentLoaded", () => {
       
     });
 populateBottomMenu(LIBRARY, TITLE, VOLUME, 30, TCONFIG);
+import { spotlight } from 'https://cdn.jsdelivr.net/gh/cttricks/spotlight.js/dist/spotlight.min.js';
+const Spotlight = await spotlight();
+Spotlight.start({ from: 1});
