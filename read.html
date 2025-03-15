@@ -23,7 +23,8 @@
     <script src="//cdn.quilljs.com/1.2.2/quill.min.js"></script>
     <link href="//cdn.quilljs.com/1.2.2/quill.bubble.css" rel="stylesheet">
     <link rel="stylesheet" href="./css/notiflix-3.2.8.min.css" />
-
+     <script src="./js/jquery-2.2.0.min.js" type="text/javascript"></script>
+    <script src="./js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="./js/notiflix-3.2.8.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="./js/togetherjs-min.js"></script>
@@ -31,8 +32,7 @@
      <script src="./js/steptip.js" type="text/javascript" charset="utf-8"></script>
   
      <!-- jQuery -->
-	   <script src="./js/jquery-2.2.0.min.js" type="text/javascript"></script>
-    <script src="./js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
+	
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.css">
      <script src="https://cdn.jsdelivr.net/gh/assisfery/SocialShareJS@1.4/social-share.min.js"></script>
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -52,11 +52,11 @@
 }
 .share-slider {
     position: fixed;
-    right: -300px;  /* Move it off-screen on the right */
-    top: 50%;
+    right: -800px;  /* Move it off-screen on the right */
+    top: 30%;
     transform: translateY(-50%);
-    width: 280px;
-    background: rgba(0, 0, 0, 0.95);
+    width: 1px;
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 15px 0 0 15px; /* Adjust border for right-side */
     padding: 20px;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2); /* Shadow on the left */
@@ -120,6 +120,10 @@
 						    <img src="./img/thriller/8.webp" style="width: 100%; height: 150px; object-fit: fill;">
                     </section>
                 </div>
+			<div class="prompt-container">
+                <input type="text" id="storyPrompt" placeholder="Enter your prompt here" />
+                <button id="generateStoryBtn">OK</button>
+            </div>
             </div>
 		 <!-- Spotlight;Hello Visitor; please select the text Next. -->
             <div class="accordion-title" id="element2">

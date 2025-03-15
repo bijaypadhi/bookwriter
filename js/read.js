@@ -1664,9 +1664,78 @@ document.addEventListener("DOMContentLoaded", () => {
             delay: { show: 300, hide: 100 } // Adds a delay for a smooth effect
         });
     });
-	
+	document.getElementById("generateStoryBtn").addEventListener("click", generateStory);
 });
 
+// Append images to Slick slider
+function appendToSlider(imageUrls) {
+    console.log("Received image URLs:", imageUrls);
+    alert("Received image URLs: " + imageUrls.join(", ")); // Show the received URLs
+
+    // Ensure Slick is initialized before adding slides
+    if (typeof $ === "undefined" || typeof $.fn.slick === "undefined") {
+        console.error("Slick is not loaded or jQuery is missing!");
+        return;
+    }
+
+    const slider = $(".vertical-center-4");
+
+    if (!slider.length) {
+        console.error("Slider element '.vertical-center-4' not found!");
+        return;
+    }
+
+    // If Slick is not initialized, initialize it
+    if (!slider.hasClass("slick-initialized")) {
+        console.warn("Slick slider not initialized, initializing now...");
+        slider.slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 4,
+            slidesToScroll: 2,
+            centerMode: true,
+			vertical: true,
+			verticalSwiping: true,
+            autoplay: true,
+			adaptiveHeight: true,
+            autoplaySpeed: 3000,
+            arrows: true,
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 1,
+                        infinite: true,
+                        dots: true
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                }
+            ]
+        });
+    }
+
+    // Add images to the slider
+    imageUrls.forEach(url => {
+        console.log("Adding image:", url);
+        slider.slick('slickAdd', `<div><img src="${url}" style="width: 100%; height: 150px; object-fit: fill;" class="slick-slide" /></div>`);
+    });
+
+    console.log("Images added to slider.");
+}
 
     //--------------------------------------------------------------------
     $(document).on('ready', function () {
@@ -1711,3 +1780,28 @@ populateBottomMenu(LIBRARY, TITLE, VOLUME, 30, TCONFIG);
 import { spotlight } from 'https://cdn.jsdelivr.net/gh/cttricks/spotlight.js/dist/spotlight.min.js';
 const Spotlight = await spotlight();
 Spotlight.start({ from: 1});
+// Story generation function
+async function generateStory() {
+    const storyPromptInput = document.getElementById("storyPrompt");
+    const prompt = storyPromptInput.value.trim();
+    if (!prompt) return alert("Please enter a prompt.");
+
+    try {
+		addLoading();
+        const response = await fetch(`http://148.100.78.182:1000/generate/?prompt=${encodeURIComponent(prompt)}`, { method: "POST" });
+        if (!response.ok) throw new Error("Failed to fetch images");
+
+        const data = await response.json();
+		alert(data.status);
+        if (data.status === "success" && data.data.images.length > 0) {
+			removeLoading();
+            appendToSlider(data.data.images.map((img) => img.url));
+        } else {
+            alert("No images found.");
+			removeLoading();
+        }
+    } catch (error) {
+        console.error("Error fetching images:", error);
+        alert(`Error fetching images: ${error.message}`);
+    }
+}
