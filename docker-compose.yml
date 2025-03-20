@@ -1,0 +1,13 @@
+version: '3.8'  # Compatible with recent Docker Compose versions
+
+services:
+  nginx-web:
+    build:
+      context: .  # Directory containing Dockerfile and HTML/CSS files
+      dockerfile: Dockerfile
+      platforms:
+        - linux/s390x  # Explicitly target s390x
+    image: bookwriter:s390x  # Name and tag for the resulting image
+    ports:
+      - "8000:80"  # Map host port 8080 to container port 80
+    container_name: nginx_s390x

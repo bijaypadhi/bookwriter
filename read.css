@@ -211,3 +211,34 @@
 #navImage {
     position: relative;
 }
+.prompt-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 5px;
+    width: 220px; /* Adjust the overall width */
+    background: white;
+}
+
+.prompt-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 16px;
+    width: 180px; /* Adjust the width of the input box */
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+    padding: 5px;
+}
+
+.arrow-btn:hover {
+    color: #007bff;
+}
