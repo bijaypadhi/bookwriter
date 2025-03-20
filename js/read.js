@@ -482,6 +482,8 @@ function updateContent() {
     if (container) {
         container.style.left = `${lastPosition.left}px`;
         container.style.top = `${lastPosition.top}px`;
+		container.style.border = '1px dotted transparent';
+
         console.log('Updated position:', lastPosition);
     }
 }
