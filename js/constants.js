@@ -1,14 +1,9 @@
-/*  PLEASE CONFIGURE THOSE VALUES OR OKUMA WON'T WORK.
-    booksURL can be on a different domain/subdomain if you prefer.
-    The books are stored in a library. The library name can be whatever you want (here it's books)
-*/
-export function homeURL() {return           "http://localhost:8000/bookwriter/"}
-export function readerURL() {return         "http://localhost:8000/bookwriter/read.html"}
+const BASE_URL = window.location.origin.includes("localhost") 
+    ? "http://localhost:8000/bookwriter" 
+    : "http://148.100.78.182/bookwriter";
 
-export function booksURL() {return          "http://localhost:8000/bookwriter/library/"}
-
-/*
-export function booksURL() {return          "http://localhost:9001/buckets/bookapplication/browse/library/"}
-*/
-export function websiteName() {return       "KFZ BookWriter"}
-export function defaultLanguage() {return   "en"}
+export function homeURL() { return `${BASE_URL}/`; }
+export function readerURL() { return `${BASE_URL}/read.html`; }
+export function booksURL() { return `${BASE_URL}/library/`; }
+export function websiteName() { return "KFZ BookWriter"; }
+export function defaultLanguage() { return "en"; }

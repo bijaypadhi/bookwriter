@@ -24,7 +24,6 @@ import {
     setPosCookie
 } from './cookie.js';
 
-
 let canvas, colorCanvas;
 let position = null;
 
@@ -374,7 +373,7 @@ function applyTemplate(src) {
 
             const colorCanvas = document.createElement('canvas');
             const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
-
+           
             // Set your original image dimensions
             colorCanvas.width = imgElement.width;
             colorCanvas.height = imgElement.height;
@@ -387,6 +386,10 @@ function applyTemplate(src) {
             const bottomPosition = colorCanvas.height - marginSize; // Stop drawing before the bottom margin
 
             // Fill the canvas with the specified color, leaving margins at the top and bottom
+			if (rgbaColor === 'rgba(0, 0, 0, 0)') {
+              rgbaColor = 'rgba(173, 216, 230, 1)';  // Light blue color
+             }
+			
             colorCtx.fillStyle = rgbaColor;
             colorCtx.fillRect(0, topPosition, colorCanvas.width, colorCanvas.height - marginSize * 2);
 
@@ -1670,7 +1673,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Append images to Slick slider
 function appendToSlider(imageUrls) {
     console.log("Received image URLs:", imageUrls);
-    alert("Received image URLs: " + imageUrls.join(", ")); // Show the received URLs
+ // Show the received URLs
 
     // Ensure Slick is initialized before adding slides
     if (typeof $ === "undefined" || typeof $.fn.slick === "undefined") {
@@ -1678,7 +1681,7 @@ function appendToSlider(imageUrls) {
         return;
     }
 
-    const slider = $(".vertical-center-4");
+    const slider =  $("#element1").next(".inner-content").find(".vertical-center-4");
 
     if (!slider.length) {
         console.error("Slider element '.vertical-center-4' not found!");
@@ -1694,10 +1697,10 @@ function appendToSlider(imageUrls) {
             slidesToShow: 4,
             slidesToScroll: 2,
             centerMode: true,
-			vertical: true,
-			verticalSwiping: true,
+            vertical: true,
+            verticalSwiping: true,
             autoplay: true,
-			adaptiveHeight: true,
+            adaptiveHeight: true,
             autoplaySpeed: 3000,
             arrows: true,
             responsive: [
@@ -1734,8 +1737,29 @@ function appendToSlider(imageUrls) {
         slider.slick('slickAdd', `<div><img src="${url}" style="width: 100%; height: 150px; object-fit: fill;" class="slick-slide" /></div>`);
     });
 
-    console.log("Images added to slider.");
+    // Ensure the newly added images are shown first
+    setTimeout(() => {
+        slider.slick('slickGoTo', 0); // Move to the first slide
+        slider.slick('slickPlay'); // Restart autoplay if enabled
+    }, 300); // Give a slight delay to ensure proper rendering
+
+    console.log("Images added and slider moved to first image.");
+	
+// Event delegation to handle click on images (even dynamically added ones)
+ $(document).on("click", ".accordion-title:contains('Scenes') + .inner-content .vertical-center-4 img", async function () {
+    const selectedImageSrc = $(this).attr("src");
+    try {
+        const resizedImageSrc = await resizeImageWithCompression(selectedImageSrc, 448, 600);
+        if (resizedImageSrc) {
+            applyTemplate(resizedImageSrc);
+        }
+    } catch (error) {
+        console.error("Image resizing failed:", error);
+    }
+});
+
 }
+
 
     //--------------------------------------------------------------------
     $(document).on('ready', function () {
@@ -1785,14 +1809,15 @@ async function generateStory() {
     const storyPromptInput = document.getElementById("storyPrompt");
     const prompt = storyPromptInput.value.trim();
     if (!prompt) return alert("Please enter a prompt.");
-
+    storyPromptInput.disabled = true;
+    generateStoryBtn.disabled = true;
     try {
 		addLoading();
         const response = await fetch(`http://148.100.78.182:1000/generate/?prompt=${encodeURIComponent(prompt)}`, { method: "POST" });
         if (!response.ok) throw new Error("Failed to fetch images");
 
         const data = await response.json();
-		alert(data.status);
+		
         if (data.status === "success" && data.data.images.length > 0) {
 			removeLoading();
             appendToSlider(data.data.images.map((img) => img.url));
@@ -1804,4 +1829,45 @@ async function generateStory() {
         console.error("Error fetching images:", error);
         alert(`Error fetching images: ${error.message}`);
     }
+	finally {
+        // Enable input and button after success or failure
+        storyPromptInput.disabled = false;
+        generateStoryBtn.disabled = false;
+        removeLoading();
+    }
 }
+async function resizeImageWithCompression(imageSrc, width, height) {
+    try {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // Prevent CORS issues if needed
+            img.src = imageSrc;
+
+            img.onload = () => {
+                // Create a canvas and draw the image
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                // Set the new dimensions
+                canvas.width = width;
+                canvas.height = height;
+
+                // Resize the image to fit the new dimensions
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert canvas to WEBP Data URL
+                const webpDataUrl = canvas.toDataURL("image/webp", 0.8); // Adjust quality (0.8 is optimal)
+
+                resolve(webpDataUrl); // Return WEBP image as Data URL
+            };
+
+            img.onerror = () => reject(new Error("Failed to load image for resizing"));
+        });
+
+    } catch (error) {
+        console.error("Image resizing failed:", error);
+        return null;
+    }
+}
+
+	
