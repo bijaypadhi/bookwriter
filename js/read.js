@@ -627,8 +627,6 @@ async function sendUserIdToServer(fileNumber) {
         const leftFileName = `${fileNumber}.webp`;  
         const rightFileName = `${fileNumber + 1}.webp`;
 
-        alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
-
         // Helper function to fetch image as Blob
         const fetchImageAsBlob = async (src) => {
             const response = await fetch(src);
@@ -1351,7 +1349,6 @@ function saveBook() {
     const leftFileName = `${fileNumber}.webp`;  // Adjust extension as needed
     const rightFileName = `${fileNumber+1}.webp`;
 
-    alert(`Generated Filenames:\nLeft: ${leftFileName}\nRight: ${rightFileName}`);
 
     // Helper function to fetch image as Blob
     const fetchImageAsBlob = (src) => {
@@ -1376,7 +1373,7 @@ function saveBook() {
             formData.append("bookName", bookName);
             formData.append("fileLeft", leftBlob, leftFileName);
             formData.append("fileRight", rightBlob, rightFileName);
-
+           
             // API call
             return fetch(`${getApiBaseURL()}/book-infos`, {
                 method: 'POST',
@@ -1384,23 +1381,13 @@ function saveBook() {
             });
         })
         .then(response => {
+			
             if (!response.ok) {
                 throw new Error('Failed to save book');
             }
-            return response.json();
+            Notiflix.Notify.success('Book saved successfully!');
         })
-        .then(data => {
-            console.log('Book saved successfully:', data);
-			Notiflix.Notify.success('Book saved successfully!');
-           
-            // Redirect to the book writer page after saving the book
-            window.location.href = `${getBaseURL()}/bookwriter/`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-			Notiflix.Notify.failure('Error saving the book:');
-           
-        });
+       
 }
 
 
@@ -1473,12 +1460,14 @@ window.onload = function () {
 };
 
 function getApiBaseURL() {
-    // Use window.location.origin as the base, assuming the API is on the same origin as the frontend
-    // Fallback to a default for local dev or testing
-    return typeof window !== 'undefined' && window.location && window.location.origin 
-        ? `${window.location.origin}/api`  // e.g., http://localhost:8080/api, http://148.100.78.182:8080/api
-        : 'http://localhost:8080/api';     // Fallback for local dev
+    if (typeof window !== 'undefined' && window.location) {
+        const { protocol, hostname } = window.location;
+        return `${protocol}//${hostname}:8080/api`;
+    }
+    // Fallback for local dev
+    return 'http://localhost:8080/api';
 }
+
  
 function updateBookInfo() {
     // Replace with actual dynamic values for bookName and userID
